@@ -1,0 +1,275 @@
+{
+    "Meals": [
+        {
+            "Name": "Rizs",
+            "Calories/100": "345",
+            "Fat": "0.9",
+            "Carbohydrate": "76.5",
+            "Protein": "7",
+            "When": [
+                "lunch",
+                "dinner"
+            ]
+        },
+        {
+            "Name": "Egg",
+            "Calories/100": "143",
+            "Fat": "10",
+            "Carbohydrate": "1",
+            "Protein": "13",
+            "When": [
+                "breakfast",
+                "lunch",
+                "dinner"
+            ]
+        },
+        {
+            "Name": "Durum Pasta",
+            "Calories/100": "358",
+            "Fat": "1.5",
+            "Carbohydrate": "70",
+            "Protein": "12",
+            "When": [
+                "",
+                "",
+                ""
+            ]
+        },
+        {
+            "Name": "Bab konzerv",
+            "Calories/100": "92",
+            "Fat": "1",
+            "Carbohydrate": "13.2",
+            "Protein": "8.2",
+            "When": [
+                "breakfast",
+                "lunch",
+                "dinner"
+            ]
+        },
+        {
+            "Name": "Sour cream 12%",
+            "Calories/100": "142",
+            "Fat": "12",
+            "Carbohydrate": "4",
+            "Protein": "3.4",
+            "When": [
+                "breakfast",
+                "lunch",
+                "dinner"
+            ]
+        },
+        {
+            "Name": "Brown toastbread",
+            "Calories/100": "242",
+            "Fat": "2.6",
+            "Carbohydrate": "43.2",
+            "Protein": "9.6",
+            "When": [
+                "breakfast",
+                "lunch",
+                "dinner"
+            ]
+        },
+        {
+            "Name": "sonka",
+            "Calories/100": "175",
+            "Fat": "36",
+            "Carbohydrate": "20",
+            "Protein": "60.0",
+            "When": "breakfast"
+        },
+        {
+            "Name": "kecskesajt",
+            "Calories/100": "600",
+            "Fat": "400",
+            "Carbohydrate": "100",
+            "Protein": "100",
+            "When": [
+                "dinner, breakfast"
+            ]
+        },
+        {
+            "Name": "pppppp",
+            "Calories/100": "0",
+            "Fat": "0",
+            "Carbohydrate": "0",
+            "Protein": "0",
+            "When": [
+                "",
+                "",
+                ""
+            ]
+        },
+        {
+            "Name": "Paprikas Krumpli",
+            "Calories/100": "460",
+            "Fat": "17",
+            "Carbohydrate": "66",
+            "Protein": "13",
+            "When": [
+                "",
+                "Lunch",
+                ""
+            ]
+        },
+        {
+            "Name": "Eggek",
+            "Calories/100": "143",
+            "Fat": "100",
+            "Carbohydrate": "1",
+            "Protein": "13",
+            "When": [
+                "",
+                "",
+                ""
+            ]
+        }
+    ],
+    "Calories": [
+        {
+            "Neve": "Rizs",
+            "Portion/each": 100,
+            "Calories_multiplication": 345.0,
+            "Fat_multiplication": 0.9,
+            "Carbohydrate_multiplication": 76.5,
+            "Protein_multiplication": 7.0,
+            "datum": "23/02/2024"
+        },
+        {
+            "Neve": "Durum Pasta",
+            "Portion/each": 100,
+            "Calories_multiplication": 358.0,
+            "Fat_multiplication": 1.5,
+            "Carbohydrate_multiplication": 73.0,
+            "Protein_multiplication": 12.0,
+            "datum": "09/03/2024"
+        },
+        {
+            "Neve": "Egg",
+            "Portion/each": 100,
+            "Calories_multiplication": 143.0,
+            "Fat_multiplication": 10.0,
+            "Carbohydrate_multiplication": 1.0,
+            "Protein_multiplication": 13.0,
+            "datum": "11/03/2024"
+        },
+        {
+            "Neve": "Egg",
+            "Portion/each": 100,
+            "Calories_multiplication": 143.0,
+            "Fat_multiplication": 10.0,
+            "Carbohydrate_multiplication": 1.0,
+            "Protein_multiplication": 13.0,
+            "datum": "12/03/2024"
+        },
+        {
+            "Neve": "Egg",
+            "Portion/each": 50,
+            "Calories_multiplication": 71.5,
+            "Fat_multiplication": 5.0,
+            "Carbohydrate_multiplication": 0.5,
+            "Protein_multiplication": 6.5,
+            "datum": "12/03/2024"
+        },
+        {
+            "Neve": "Egg",
+            "Portion/each": 20,
+            "Calories_multiplication": 28.6,
+            "Fat_multiplication": 2.0,
+            "Carbohydrate_multiplication": 0.2,
+            "Protein_multiplication": 2.6,
+            "datum": "12/03/2024"
+        },
+        {
+            "Neve": "Egg",
+            "Portion/each": 100,
+            "Calories_multiplication": 143.0,
+            "Fat_multiplication": 10.0,
+            "Carbohydrate_multiplication": 1.0,
+            "Protein_multiplication": 13.0,
+            "datum": "12/03/2024"
+        },
+        {
+            "Neve": "Egg",
+            "Portion/each": 100,
+            "Calories_multiplication": 143.0,
+            "Fat_multiplication": 10.0,
+            "Carbohydrate_multiplication": 1.0,
+            "Protein_multiplication": 13.0,
+            "datum": "13/03/2024"
+        },
+        {
+            "Neve": "Bab konzerv",
+            "Portion/each": 100,
+            "Calories_multiplication": 242.0,
+            "Fat_multiplication": 2.6,
+            "Carbohydrate_multiplication": 43.2,
+            "Protein_multiplication": 9.6,
+            "datum": "09/04/2024"
+        },
+        {
+            "Neve": "Bab konzerv",
+            "Portion/each": 100,
+            "Calories_multiplication": 242.0,
+            "Fat_multiplication": 2.6,
+            "Carbohydrate_multiplication": 43.2,
+            "Protein_multiplication": 9.6,
+            "datum": "09/04/2024"
+        },
+        {
+            "Neve": "Bab konzerv",
+            "Portion/each": 100,
+            "Calories_multiplication": 242.0,
+            "Fat_multiplication": 2.6,
+            "Carbohydrate_multiplication": 43.2,
+            "Protein_multiplication": 9.6,
+            "datum": "09/04/2024"
+        },
+        {
+            "Neve": "Rizs",
+            "Portion/each": 100,
+            "Calories_multiplication": 345.0,
+            "Fat_multiplication": 0.9,
+            "Carbohydrate_multiplication": 76.5,
+            "Protein_multiplication": 7.0,
+            "datum": "09/04/2024"
+        },
+        {
+            "Neve": "sonka",
+            "Portion/each": 100,
+            "Calories_multiplication": 175.0,
+            "Fat_multiplication": 36.0,
+            "Carbohydrate_multiplication": 20.0,
+            "Protein_multiplication": 60.0,
+            "datum": "09/04/2024"
+        },
+        {
+            "Neve": "Egg",
+            "Portion/each": 100,
+            "Calories_multiplication": 143.0,
+            "Fat_multiplication": 10.0,
+            "Carbohydrate_multiplication": 1.0,
+            "Protein_multiplication": 13.0,
+            "datum": "09/04/2024"
+        },
+        {
+            "Neve": "Paprikas Krumpli",
+            "Portion/each": 100,
+            "Calories_multiplication": 460.0,
+            "Fat_multiplication": 17.0,
+            "Carbohydrate_multiplication": 66.0,
+            "Protein_multiplication": 13.0,
+            "datum": "09/04/2024"
+        },
+        {
+            "Neve": "Durum Pasta",
+            "Portion/each": 100,
+            "Calories_multiplication": 358.0,
+            "Fat_multiplication": 1.5,
+            "Carbohydrate_multiplication": 70.0,
+            "Protein_multiplication": 12.0,
+            "datum": "09/04/2024"
+        }
+    ]
+}

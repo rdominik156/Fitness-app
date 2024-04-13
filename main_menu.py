@@ -1,0 +1,416 @@
+import tkinter as tk
+import customtkinter as ctk
+from tkinter import ttk
+import json
+from CTkListbox import *
+from datetime import datetime
+from tkcalendar import *
+
+datum = datetime.today().strftime("%d/%m/%Y")
+with open('kaja.json', "r", newline="") as hami:
+                adat = json.load(hami)
+
+jelolt_datumok = []
+for datumok in adat["Calories"]:
+    datumok = str(datumok["datum"]).replace("/","-")
+    jelolt_datumok.append(datumok)
+
+#print(jelolt_datumok)
+
+# Meals-ből csak a nevek!
+kaja= []
+for nemtom in adat["Meals"]:
+      kaja.append(nemtom["Name"])
+
+
+ctk.set_appearance_mode("System")
+ctk.set_appearance_mode("dark")
+ctk.set_default_color_theme("dark-blue")    
+
+class MyTabView(ctk.CTkTabview):
+    def __init__(self, master, **kwargs):
+        super().__init__(master, **kwargs)
+
+        #Tabs
+        self.add(" Add new meal ")
+        self.add(" Calculate ")
+        self.add(" Calendar ")
+        self.set(" Add new meal ")
+    
+
+        def All_GUI(self):
+            style = ttk.Style()
+            style.theme_create("DarkTheme", parent="alt", settings={
+            "TNotebook": {"configure": {"tabmargins": [2, 5, 2, 0], "background": "#212121"}},
+            "TNotebook.Tab": {"configure": {"padding": [5, 1], "background": "#1e1e1e", "foreground": "#d9d9d9"},
+                              "map": {"background": [("selected", "#323232")],
+                                      "foreground": [("selected", "#ffffff")]}},
+            "TFrame": {"configure": {"background": "#212121"}}
+            })
+            style.theme_use("DarkTheme")
+            #Frame for Calendar tab
+            self.calendarFrame = ctk.CTkFrame(master=self.tab(" Calendar "), border_width=2)
+            self.calendarFrame.grid(row=0, column=0, padx=20, pady=10)
+
+            self.tab_calendar = ttk.Notebook(master=self.calendarFrame)
+            self.tab_calendar.grid(row=0, column=0, pady=0)
+            self.nap = ttk.Frame(self.tab_calendar)
+            self.het = ttk.Frame(self.tab_calendar)
+            self.honap = ttk.Frame(self.tab_calendar)
+            self.tab_calendar.add(self.nap, text="Nap")
+            self.tab_calendar.add(self.het, text="Hét")
+            self.tab_calendar.add(self.honap, text="Hónap")
+
+            #Frame for calculate tab
+            self.entryFrame = ctk.CTkFrame(master=self.tab(" Calculate "), border_width=2)
+            self.entryFrame.grid(row=0, column=0, padx=20, pady=10)
+
+            #Frame for add new meal tab
+            self.mealFrame = ctk.CTkFrame(master=self.tab(" Add new meal "), border_width=2)
+            self.mealFrame.grid(row=0, column=0, padx=20, pady=10)
+            
+
+            #Labels for tab " Add new meal "
+            self.nameLabel = ctk.CTkLabel(master=self.mealFrame, text="Name: ")
+            self.nameLabel.grid(row=0, column=0, padx=20, pady=10)
+            self.calorieLabel = ctk.CTkLabel(master=self.mealFrame, text="Calories/100: ")
+            self.calorieLabel.grid(row=1, column=0, padx=20, pady=10)
+            self.fatLabel = ctk.CTkLabel(master=self.mealFrame, text="Fat: ")
+            self.fatLabel.grid(row=2, column=0, padx=20, pady=10)
+            self.carboLabel = ctk.CTkLabel(master=self.mealFrame, text="Carbohydrate: ")
+            self.carboLabel.grid(row=3, column=0, padx=20, pady=10)
+            self.ProteinLabel = ctk.CTkLabel(master=self.mealFrame, text="Protein: ")
+            self.ProteinLabel.grid(row=4, column=0, padx=20, pady=10)
+            self.whenLabel = ctk.CTkLabel(master=self.mealFrame, text="When: ")
+            self.whenLabel.grid(row=0, column=2, padx=20, pady=10)
+
+            #Labels for tab " Calculate "
+            self.whatLabel = ctk.CTkLabel(master=self.entryFrame, text="Meal: ")
+            self.whatLabel.grid(row=0, column=0,padx=20, pady=10 )
+            self.portionLabel = ctk.CTkLabel(master=self.entryFrame, text="Portion: ")
+            self.portionLabel.grid(row=1, column=0,padx=20, pady=10 )
+            self.allCaloriesLabel = ctk.CTkLabel(master=self.entryFrame, text="All calories: ")
+            self.allCaloriesLabel.grid(column=0,row=4,padx=20, pady=10 )
+            self.allCaloriesCalculated = ctk.CTkLabel(master=self.entryFrame, text="")
+            self.allCaloriesCalculated.grid(column=1,row=4,padx=20, pady=10 )
+
+            #Labels for tab " Calendar "
+            self.datumLabel = ctk.CTkLabel(master=self.nap, text="")
+            self.datumLabel.grid(row=1, column=0, padx=20, pady=10)
+
+            #Listbox for tab " Calculate "
+            self.listBox = CTkListbox(master=self.tab(" Calculate "),width=500)
+            self.listBox.grid(column=1, row=0)
+
+            #Listbox for tab " Calendar "
+            self.calendarlistBox = CTkListbox(master=self.nap,width=500)
+            self.calendarlistBox.grid(column=0, row=0, padx=20, pady=10)
+
+            # Calendar
+            self.calend = Calendar(master=self.nap, selectmode="day",
+                                   year=int(datum[6:10]), month=int(datum[3:5]), day=int(datum[0:2]),
+                                   date_pattern='dd/mm/yyyy',
+                                   selectbackground="#212121",
+                                   showweeknumbers=False,
+                                   showothermonthdays=False)
+            self.calend.grid(row=0, column=1, padx=20, pady=10)
+
+            #Variables for tab " Add new meal " checkboxes
+            self.checkboxBreakfast = ctk.StringVar()
+            self.checkboxLunch = ctk.StringVar()
+            self.checkboxDinner = ctk.StringVar()
+            
+            #Entries for tab " Add new meal "
+            self.nameEntry = ctk.CTkEntry(master=self.mealFrame, textvariable="")
+            self.nameEntry.grid(row=0, column=1, padx=20, pady=10)
+            self.calorieEntry = ctk.CTkEntry(master=self.mealFrame)
+            self.calorieEntry.grid(row=1, column=1, padx=20, pady=10)
+            self.fatEntry = ctk.CTkEntry(master=self.mealFrame)
+            self.fatEntry.grid(row=2, column=1, padx=20, pady=10)
+            self.carboEntry = ctk.CTkEntry(master=self.mealFrame)
+            self.carboEntry.grid(row=3, column=1, padx=20, pady=10)
+            self.ProteinEntry = ctk.CTkEntry(master=self.mealFrame)
+            self.ProteinEntry.grid(row=4, column=1, padx=20, pady=10)
+            self.whenEntryBreakfast = ctk.CTkCheckBox(master=self.mealFrame, text="Breakfast", variable=self.checkboxBreakfast, onvalue="Breakfast")
+            self.whenEntryBreakfast.grid(row=1, column=2, padx=20, pady=10)
+            self.whenEntryLunch = ctk.CTkCheckBox(master=self.mealFrame, text="Lunch", variable=self.checkboxLunch, onvalue="Lunch")
+            self.whenEntryLunch.grid(row=2, column=2, padx=20, pady=10)
+            self.whenEntryDinner = ctk.CTkCheckBox(master=self.mealFrame, text="Dinner", variable=self.checkboxDinner, onvalue="Dinner")
+            self.whenEntryDinner.grid(row=3, column=2, padx=20, pady=10)
+
+            #Entries for tab " Calculate "
+            self.combobox = ctk.CTkOptionMenu(master=self.entryFrame, values=kaja, button_color="green")
+            self.combobox.grid(row=0, column=1, padx=20, pady=10)
+            self.combobox.set("")
+            self.portionEntry = ctk.CTkEntry(master=self.entryFrame)
+            self.portionEntry.grid(row=1, column=1, padx=20, pady=10)
+            #Entries for tab " Add new meal "
+            self.comboboxMeal = ctk.CTkComboBox(master=self.mealFrame, values=kaja, command=Entry_k_visszaírása)
+            self.comboboxMeal.grid(row=6, column=0, padx=20, pady=10)
+            self.comboboxMeal.set("")
+
+        def Entry_k_visszaírása(choice):
+            self.nameEntry.delete(0,"end")
+            self.calorieEntry.delete(0,"end")
+            self.fatEntry.delete(0,"end")
+            self.carboEntry.delete(0,"end")
+            self.ProteinEntry.delete(0,"end")
+            for i in adat["Meals"]:
+                 if i["Name"] == choice:
+                    self.nameEntry.insert(0,i["Name"])
+                    self.calorieEntry.insert(0,i["Calories/100"])
+                    self.fatEntry.insert(0,i["Fat"])
+                    self.carboEntry.insert(0,i["Carbohydrate"])
+                    self.ProteinEntry.insert(0,i["Protein"])
+                    self.whenEntryBreakfast #késöbb meg kell csinálni!!!!
+                    self.whenEntryLunch
+                    self.whenEntryDinner
+            self.comboboxMeal.set("")
+
+        All_GUI(self)
+
+        def get_datum(event):
+            all_kcal_sum = 0
+            all_eatMuch_sum = 0
+            all_eatFat_sum = 0
+            all_eatCarb_sum = 0
+            all_eatProt_sum = 0
+            self.calendarlistBox.delete(1,"end")
+            curent_data = self.calend.get_date()
+            for i in adat["Calories"]:
+                neve = i["Neve"]
+                eatMuch = i["Portion/each"]
+                mennyisege = i["Calories_multiplication"]
+                eatFat = i["Fat_multiplication"]
+                eatCarb = i["Carbohydrate_multiplication"]
+                eatProt = i["Protein_multiplication"]
+                if i["datum"] == curent_data:
+                    if len(neve) <= 8:
+                        self.calendarlistBox.insert("end",f"{neve}\t\t{eatMuch}\t\t{mennyisege}\t{eatFat}\t{eatCarb}\t\t{eatProt}")
+                    else:
+                        self.calendarlistBox.insert("end",f"{neve}\t{eatMuch}\t\t{mennyisege}\t{eatFat}\t{eatCarb}\t\t{eatProt}")
+                    all_kcal_sum += mennyisege
+                    all_eatMuch_sum += eatMuch
+                    all_eatFat_sum += eatFat
+                    all_eatCarb_sum += eatCarb
+                    all_eatProt_sum += eatProt
+            self.datumLabel.configure(text=f"Összes:\t\t{all_eatMuch_sum}\t\t{all_kcal_sum}\t{all_eatFat_sum}\t{all_eatCarb_sum}\t\t{all_eatProt_sum}         ")        
+        self.calend.bind("<<CalendarSelected>>", get_datum)
+
+        date = Calendar.datetime.today()
+        print(date)
+        # def color_calendar_dates(calendar, adat):
+        #     adat = set(adat)
+        #     for date_str in adat:
+        #         day, month, year = map(int, date_str.split('-'))
+        #         date_str = (f"{year}-0{month}-0{day} 11:53:03.667295")
+        #         print(date_str)
+        #         ev_id=calendar.calevent_create(str(calendar.datetime.date(2024,4,12)),text="green")
+        #         calendar.calevent_configure(ev_id.text, backgroundcolor="green")
+        #     #    print(date_str)
+        
+        def color_calendar_dates(calendar):
+            date = datetime.date(2024,12,12)
+            print(date)
+            
+            calendar.calevent_create(date,text="")
+    
+        color_calendar_dates(self.calend)
+
+        def refresh():
+        # variable of display all kcal
+            self.inClassSum = 0
+
+            # insert and refresh listbox
+            self.listBox.insert(0,f"Név\t\tMennyiség\tkalória\tzsír\tszénhidrát\tprotein")
+            self.calendarlistBox.insert(0,f"Név\t\tMennyiség\tkalória\tzsír\tszénhidrát\tprotein")
+
+            for i in adat["Calories"]:
+                if i["datum"] == datum:
+                    eatWhat = i["Neve"]
+                    eatMuch = i["Portion/each"]
+                    eatSoMuch = i["Calories_multiplication"]
+                    eatFat = i["Fat_multiplication"]
+                    eatCarb = i["Carbohydrate_multiplication"]
+                    eatProt = i["Protein_multiplication"]
+                    if len(eatWhat) >8:
+                        self.listBox.insert('end',f"{eatWhat}\t{eatMuch}\t\t{eatSoMuch}\t{eatFat}\t{eatCarb}\t\t{eatProt}")
+                    else:
+                         self.listBox.insert('end',f"{eatWhat}\t\t{eatMuch}\t\t{eatSoMuch}\t{eatFat}\t{eatCarb}\t\t{eatProt}")
+                    # modify all kcal
+                    self.inClassSum += eatSoMuch
+            self.allCaloriesCalculated.configure(text=f"{self.inClassSum}   Kcal")
+        refresh()
+
+            #a név és caloria json-hoz adása
+        def hozza_adás_calories():
+            Neve = self.combobox.get()
+            Portion_per_each = self.portionEntry.get()
+            Portion_per_each =int(Portion_per_each)
+
+            # Calories_multiplication kiszámolása
+            x = 0
+            for i in kaja:
+                #y = adat["Meals"][x]["Calories/100"]
+                if i == Neve:
+                    cal = adat["Meals"][x]["Calories/100"]
+                    fat = adat["Meals"][x]["Fat"]
+                    carb = adat["Meals"][x]["Carbohydrate"]
+                    prot = adat["Meals"][x]["Protein"]
+                    cal_mul = (int(cal) * Portion_per_each) / 100
+                    fat_mul = (float(fat) * Portion_per_each) / 100
+                    carb_mul = (float(carb) * Portion_per_each) / 100
+                    prot_mul = (float(prot) * Portion_per_each) / 100
+                    x = 0
+                    break
+                else:
+                     x += 1
+            if len(Neve) >8:
+                self.listBox.insert('end',f"{Neve}\t{Portion_per_each}\t\t{cal}\t{fat}\t{carb}\t{prot}")
+            else:
+                self.listBox.insert('end',f"{Neve}\t\t{Portion_per_each}\t\t{cal}\t{fat}\t{carb}\t\t{prot}")
+
+            # Calories dictionary
+            caloria_adatok = {
+              "Neve": Neve,
+              "Portion/each": Portion_per_each,
+              "Calories_multiplication": cal_mul,
+              "Fat_multiplication": fat_mul,
+              "Carbohydrate_multiplication": carb_mul,
+              "Protein_multiplication": prot_mul,
+              "datum": datum
+             }
+            
+            # add to json
+            with open("kaja.json", "r+") as loader:
+                adat["Calories"].append(caloria_adatok)
+                json.dump(adat, loader, indent=4)
+            # modify all kcal
+            self.inClassSum += cal_mul
+            self.allCaloriesCalculated.configure(text=f"{self.inClassSum}   Kcal")
+
+
+        def listabol_torles_Calculat():
+            n = 0
+            selected_item = self.listBox.curselection()
+            if selected_item != None:
+                selected_name = self.listBox.get(selected_item)
+                selected_name = list(filter(None,selected_name.split("\t")))
+                for i in adat["Calories"]:
+                    if datum == i["datum"]:
+                        if selected_item != 0:
+                            x= adat["Calories"][n+selected_item-1]["Calories_multiplication"]
+                            self.inClassSum -= float(x)
+                            self.inClassSum = float("{:.1f}".format(self.inClassSum))
+                            self.allCaloriesCalculated.configure(text=f"{self.inClassSum}   Kcal")
+                            self.listBox.delete(selected_item)
+                            break
+                    else:
+                        n+=1
+            
+            if selected_item != 0:
+                del adat["Calories"][n+selected_item-1]
+                with open("kaja.json", "w") as f:
+                    json.dump(adat, f, indent=4)
+
+
+        def hozza_adás_Meals():
+            Nev = self.nameEntry.get()
+            Kaloria = self.calorieEntry.get()
+            zsir = self.fatEntry.get()
+            szenhidrat = self.carboEntry.get()
+            feherje = self.ProteinEntry.get()              
+            etkezes = [self.checkboxBreakfast.get(), self.checkboxLunch.get(), self.checkboxDinner.get()]
+
+            # megnézem hogy van e üres érték -> ha van "0" értéket ad
+            x = [Nev, Kaloria, zsir, szenhidrat, feherje]
+            for i in x:
+                if i != "":
+                    continue
+                else:
+                    x[x.index(i)] = "0"
+
+            # adat tömb
+            adatok = {
+                "Name": x[0],
+                "Calories/100": x[1], 
+                "Fat": x[2],
+                "Carbohydrate": x[3],
+                "Protein": x[4],
+                "When": etkezes
+            }
+
+            # megnézem hogy van e már ez az étel json-ban -->
+            van_már_ilyen = 0
+            számláló = 0
+            for j in kaja:
+                if Nev == j:
+                    van_már_ilyen = 1
+                    break
+                else:
+                    számláló += 1
+
+            # ha VAN ez fut le -> rámenti az újat a régire
+            if van_már_ilyen == 1:
+                with open("kaja.json", "w") as f:
+                    adat["Meals"].pop(számláló)
+                    adat["Meals"].insert(számláló,adatok)
+                    json.dump(adat, f, indent=4)
+                self.comboboxMeal.configure(values=kaja)
+
+            # ha NINCS ez fut le
+            else:
+                with open("kaja.json", "r+") as loader:
+                    adat["Meals"].append(adatok)
+                    json.dump(adat, loader, indent=4)
+                kaja.append(adatok["Name"])
+                self.comboboxMeal.configure(values=kaja)
+
+        def listabol_torles_Meals():
+            n = 0
+            selected_item = self.nameEntry.get()
+            if selected_item != "":
+                for i in adat["Meals"]:
+                    if i["Name"] == self.nameEntry.get():
+                        break
+                    
+                    else:
+                        n+=1
+            
+                del adat["Meals"][n]
+                with open("kaja.json", "w") as f:
+                    json.dump(adat, f, indent=4)
+                kaja.pop(n)
+                self.comboboxMeal.configure(values=kaja)
+                self.nameEntry.delete(0,"end")
+                self.calorieEntry.delete(0,"end")
+                self.fatEntry.delete(0,"end")
+                self.carboEntry.delete(0,"end")
+                self.ProteinEntry.delete(0,"end")
+
+        def buttons():
+        # Buttons
+            self.addToListButton = ctk.CTkButton(master=self.entryFrame, text="Add to the list", command=hozza_adás_calories)
+            self.addToListButton.grid(row=3, column=1, padx=20, pady=20)    
+            self.removeFromListButton = ctk.CTkButton(master=self.entryFrame, text="Remove selected meal", command=listabol_torles_Calculat)
+            self.removeFromListButton.grid(row=3, column=0, padx=20, pady=20)             
+    
+            self.mealAddToDatabase = ctk.CTkButton(master=self.mealFrame, text="Add to the database", command=hozza_adás_Meals)
+            self.mealAddToDatabase.grid(row=6, padx=20, pady=10, column=1)
+            self.delFromDatabase = ctk.CTkButton(master=self.mealFrame, text="Delete", command=listabol_torles_Meals,fg_color="#D12727",font=(None,14),hover_color="#811A1A")
+            self.delFromDatabase.grid(row=6, padx=20, pady=10, column=2)
+    
+            #self.get_datum_button = ctk.CTkButton(master=self.nap, text="kilistázás", command="""get_datum""")
+            #self.get_datum_button.grid(row=1, padx=20, pady=10, column=1)
+        buttons()
+
+class Root(ctk.CTk):
+    def __init__(self):
+            super().__init__()
+
+            self.tab_view = MyTabView(master=self)
+            self.tab_view.grid(row=0, column=0, padx=20, pady=20)
+
+root = Root()
+root.title("TheFitnessApp")
+root.mainloop()
