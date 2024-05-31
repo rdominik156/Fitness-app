@@ -10,13 +10,6 @@ datum = datetime.today().strftime("%d/%m/%Y")
 with open('kaja.json', "r", newline="") as hami:
                 adat = json.load(hami)
 
-jelolt_datumok = []
-for datumok in adat["Calories"]:
-    datumok = str(datumok["datum"]).replace("/","-")
-    jelolt_datumok.append(datumok)
-
-#print(jelolt_datumok)
-
 # Meals-ből csak a nevek!
 kaja= []
 for nemtom in adat["Meals"]:
@@ -110,7 +103,7 @@ class MyTabView(ctk.CTkTabview):
             self.calend = Calendar(master=self.nap, selectmode="day",
                                    year=int(datum[6:10]), month=int(datum[3:5]), day=int(datum[0:2]),
                                    date_pattern='dd/mm/yyyy',
-                                   selectbackground="#212121",
+                                   selectbackground="#4d4d4d",
                                    showweeknumbers=False,
                                    showothermonthdays=False)
             self.calend.grid(row=0, column=1, padx=20, pady=10)
@@ -197,23 +190,12 @@ class MyTabView(ctk.CTkTabview):
             self.datumLabel.configure(text=f"Összes:\t\t{all_eatMuch_sum}\t\t{all_kcal_sum}\t{all_eatFat_sum}\t{all_eatCarb_sum}\t\t{all_eatProt_sum}         ")        
         self.calend.bind("<<CalendarSelected>>", get_datum)
 
-        date = Calendar.datetime.today()
-        print(date)
-        # def color_calendar_dates(calendar, adat):
-        #     adat = set(adat)
-        #     for date_str in adat:
-        #         day, month, year = map(int, date_str.split('-'))
-        #         date_str = (f"{year}-0{month}-0{day} 11:53:03.667295")
-        #         print(date_str)
-        #         ev_id=calendar.calevent_create(str(calendar.datetime.date(2024,4,12)),text="green")
-        #         calendar.calevent_configure(ev_id.text, backgroundcolor="green")
-        #     #    print(date_str)
-        
         def color_calendar_dates(calendar):
-            date = datetime.date(2024,12,12)
-            print(date)
-            
-            calendar.calevent_create(date,text="")
+
+            for datumok in adat["Calories"]:
+                day = datumok["datum"]
+                date_obj = datetime.strptime(day, '%d/%m/%Y').date()
+                calendar.calevent_create(date_obj, 'highlight', 'highlight')
     
         color_calendar_dates(self.calend)
 
