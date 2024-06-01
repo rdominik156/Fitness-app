@@ -7,6 +7,8 @@ from datetime import datetime
 from tkcalendar import *
 
 datum = datetime.today().strftime("%d/%m/%Y")
+
+# adat = json-ból az össze adat!
 with open('kaja.json', "r", newline="") as hami:
                 adat = json.load(hami)
 
@@ -141,6 +143,24 @@ class MyTabView(ctk.CTkTabview):
             self.comboboxMeal = ctk.CTkComboBox(master=self.mealFrame, values=kaja, command=Entry_k_visszaírása)
             self.comboboxMeal.grid(row=6, column=0, padx=20, pady=10)
             self.comboboxMeal.set("")
+
+        def Táblázat(self, adat):
+            pass
+            x = 0
+            y = 0
+
+            # code for creating table
+            for i in adat["Calories"]:
+                x += 1
+                for j in i.values():
+                    y += 1
+
+                    self.e = entry = customtkinter.CTkEntry(self.entryFramep, placeholder_text='CTkEntry', width=140, height=28)
+                    entry.place(x=10, y=10)
+
+                    self.e.grid(row=x, column=y)
+                    self.e.insert(END, j)
+                y = 0
 
         def Entry_k_visszaírása(choice):
             self.nameEntry.delete(0,"end")

@@ -1,5 +1,12 @@
 import tkinter as tk
-from tkcalendar import Calendar
+from tkinter import *
+import json
+
+
+with open('kaja.json', "r", newline="") as hami:
+                adat = json.load(hami)
+
+""" from tkcalendar import Calendar
 from datetime import date
 
 def main():
@@ -25,4 +32,27 @@ def main():
     root.mainloop()
 
 if __name__ == "__main__":
-    main()
+    main() """
+
+class Table:
+     
+    def __init__(self,root):
+        x = 0
+        y = 0
+         
+        # code for creating table
+        for i in adat["Calories"]:
+            x += 1
+            for j in i.values():
+                y += 1
+             
+                self.e = Entry(root)
+             
+                self.e.grid(row=x, column=y)
+                self.e.insert(END, j)
+            y = 0
+ 
+# create root window
+root = Tk()
+t = Table(root)
+root.mainloop()
