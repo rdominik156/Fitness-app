@@ -33,7 +33,7 @@ def main():
 
 if __name__ == "__main__":
     main() """
-
+# táblázat
 class Table:
      
     def __init__(self,root):
@@ -55,4 +55,4 @@ class Table:
 # create root window
 root = Tk()
 t = Table(root)
-root.mainloop()
+root.mainloop() 

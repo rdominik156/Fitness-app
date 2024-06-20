@@ -22,15 +22,22 @@ ctk.set_appearance_mode("System")
 ctk.set_appearance_mode("dark")
 ctk.set_default_color_theme("dark-blue")    
 
-class MyTabView(ctk.CTkTabview):
-    def __init__(self, master, **kwargs):
-        super().__init__(master, **kwargs)
+class App(ctk.CTk):
+    def __init__(self, **kwargs):
+        super().__init__( **kwargs)
 
-        #Tabs
-        self.add(" Add new meal ")
-        self.add(" Calculate ")
-        self.add(" Calendar ")
-        self.set(" Add new meal ")
+        # declare Tabview
+        self.tab_view = ctk.CTkTabview(self)
+        self.tab_view.pack( padx=20, pady=20)
+
+        self.add_tabs()
+
+    # tabs
+    def add_tabs(self):
+        self.tab3 = self.tab_view.add(" Add new meal ")
+        self.tab2 = self.tab_view.add(" Calculate ")
+        self.tab1 = self.tab_view.add(" Calendar ")
+
     
 
         def All_GUI(self):
@@ -44,10 +51,10 @@ class MyTabView(ctk.CTkTabview):
             })
             style.theme_use("DarkTheme")
             #Frame for Calendar tab
-            self.calendarFrame = ctk.CTkFrame(master=self.tab(" Calendar "), border_width=2)
+            self.calendarFrame = ctk.CTkFrame(master=self.tab1, border_width=2)
             self.calendarFrame.grid(row=0, column=0, padx=20, pady=10)
 
-            self.tab_calendar = ttk.Notebook(master=self.calendarFrame)
+            self.tab_calendar = ttk.Notebook(master=self.tab1)
             self.tab_calendar.grid(row=0, column=0, pady=0)
             self.nap = ttk.Frame(self.tab_calendar)
             self.het = ttk.Frame(self.tab_calendar)
@@ -57,26 +64,26 @@ class MyTabView(ctk.CTkTabview):
             self.tab_calendar.add(self.honap, text="Hónap")
 
             #Frame for calculate tab
-            self.entryFrame = ctk.CTkFrame(master=self.tab(" Calculate "), border_width=2)
+            self.entryFrame = ctk.CTkFrame(master=self.tab2, border_width=2)
             self.entryFrame.grid(row=0, column=0, padx=20, pady=10)
 
             #Frame for add new meal tab
-            self.mealFrame = ctk.CTkFrame(master=self.tab(" Add new meal "), border_width=2)
-            self.mealFrame.grid(row=0, column=0, padx=20, pady=10)
+            #self.mealFrame = ctk.CTkFrame(master=self.tab3, border_width=2)
+            #self.mealFrame.grid(row=0, column=0, padx=20, pady=10)
             
 
             #Labels for tab " Add new meal "
-            self.nameLabel = ctk.CTkLabel(master=self.mealFrame, text="Name: ")
+            self.nameLabel = ctk.CTkLabel(master=self.tab3, text="Name: ")
             self.nameLabel.grid(row=0, column=0, padx=20, pady=10)
-            self.calorieLabel = ctk.CTkLabel(master=self.mealFrame, text="Calories/100: ")
+            self.calorieLabel = ctk.CTkLabel(master=self.tab3, text="Calories/100: ")
             self.calorieLabel.grid(row=1, column=0, padx=20, pady=10)
-            self.fatLabel = ctk.CTkLabel(master=self.mealFrame, text="Fat: ")
+            self.fatLabel = ctk.CTkLabel(master=self.tab3, text="Fat: ")
             self.fatLabel.grid(row=2, column=0, padx=20, pady=10)
-            self.carboLabel = ctk.CTkLabel(master=self.mealFrame, text="Carbohydrate: ")
+            self.carboLabel = ctk.CTkLabel(master=self.tab3, text="Carbohydrate: ")
             self.carboLabel.grid(row=3, column=0, padx=20, pady=10)
-            self.ProteinLabel = ctk.CTkLabel(master=self.mealFrame, text="Protein: ")
+            self.ProteinLabel = ctk.CTkLabel(master=self.tab3, text="Protein: ")
             self.ProteinLabel.grid(row=4, column=0, padx=20, pady=10)
-            self.whenLabel = ctk.CTkLabel(master=self.mealFrame, text="When: ")
+            self.whenLabel = ctk.CTkLabel(master=self.tab3, text="When: ")
             self.whenLabel.grid(row=0, column=2, padx=20, pady=10)
 
             #Labels for tab " Calculate "
@@ -94,7 +101,7 @@ class MyTabView(ctk.CTkTabview):
             self.datumLabel.grid(row=1, column=0, padx=20, pady=10)
 
             #Listbox for tab " Calculate "
-            self.listBox = CTkListbox(master=self.tab(" Calculate "),width=500)
+            self.listBox = CTkListbox(master=self.tab2,width=500)
             self.listBox.grid(column=1, row=0)
 
             #Listbox for tab " Calendar "
@@ -116,21 +123,21 @@ class MyTabView(ctk.CTkTabview):
             self.checkboxDinner = ctk.StringVar()
             
             #Entries for tab " Add new meal "
-            self.nameEntry = ctk.CTkEntry(master=self.mealFrame, textvariable="")
+            self.nameEntry = ctk.CTkEntry(master=self.tab3, textvariable="")
             self.nameEntry.grid(row=0, column=1, padx=20, pady=10)
-            self.calorieEntry = ctk.CTkEntry(master=self.mealFrame)
+            self.calorieEntry = ctk.CTkEntry(master=self.tab3)
             self.calorieEntry.grid(row=1, column=1, padx=20, pady=10)
-            self.fatEntry = ctk.CTkEntry(master=self.mealFrame)
+            self.fatEntry = ctk.CTkEntry(master=self.tab3)
             self.fatEntry.grid(row=2, column=1, padx=20, pady=10)
-            self.carboEntry = ctk.CTkEntry(master=self.mealFrame)
+            self.carboEntry = ctk.CTkEntry(master=self.tab3)
             self.carboEntry.grid(row=3, column=1, padx=20, pady=10)
-            self.ProteinEntry = ctk.CTkEntry(master=self.mealFrame)
+            self.ProteinEntry = ctk.CTkEntry(master=self.tab3)
             self.ProteinEntry.grid(row=4, column=1, padx=20, pady=10)
-            self.whenEntryBreakfast = ctk.CTkCheckBox(master=self.mealFrame, text="Breakfast", variable=self.checkboxBreakfast, onvalue="Breakfast")
+            self.whenEntryBreakfast = ctk.CTkCheckBox(master=self.tab3, text="Breakfast", variable=self.checkboxBreakfast, onvalue="Breakfast")
             self.whenEntryBreakfast.grid(row=1, column=2, padx=20, pady=10)
-            self.whenEntryLunch = ctk.CTkCheckBox(master=self.mealFrame, text="Lunch", variable=self.checkboxLunch, onvalue="Lunch")
+            self.whenEntryLunch = ctk.CTkCheckBox(master=self.tab3, text="Lunch", variable=self.checkboxLunch, onvalue="Lunch")
             self.whenEntryLunch.grid(row=2, column=2, padx=20, pady=10)
-            self.whenEntryDinner = ctk.CTkCheckBox(master=self.mealFrame, text="Dinner", variable=self.checkboxDinner, onvalue="Dinner")
+            self.whenEntryDinner = ctk.CTkCheckBox(master=self.tab3, text="Dinner", variable=self.checkboxDinner, onvalue="Dinner")
             self.whenEntryDinner.grid(row=3, column=2, padx=20, pady=10)
 
             #Entries for tab " Calculate "
@@ -140,7 +147,7 @@ class MyTabView(ctk.CTkTabview):
             self.portionEntry = ctk.CTkEntry(master=self.entryFrame)
             self.portionEntry.grid(row=1, column=1, padx=20, pady=10)
             #Entries for tab " Add new meal "
-            self.comboboxMeal = ctk.CTkComboBox(master=self.mealFrame, values=kaja, command=Entry_k_visszaírása)
+            self.comboboxMeal = ctk.CTkComboBox(master=self.tab3, values=kaja, command=Entry_k_visszaírása)
             self.comboboxMeal.grid(row=6, column=0, padx=20, pady=10)
             self.comboboxMeal.set("")
 
@@ -155,11 +162,11 @@ class MyTabView(ctk.CTkTabview):
                 for j in i.values():
                     y += 1
 
-                    self.e = entry = customtkinter.CTkEntry(self.entryFramep, placeholder_text='CTkEntry', width=140, height=28)
+                    self.e = entry = ctk.CTkEntry(self.tab2p, placeholder_text='CTkEntry', width=140, height=28)
                     entry.place(x=10, y=10)
 
                     self.e.grid(row=x, column=y)
-                    self.e.insert(END, j)
+                    self.e.insert("end", j)
                 y = 0
 
         def Entry_k_visszaírása(choice):
@@ -397,22 +404,17 @@ class MyTabView(ctk.CTkTabview):
             self.removeFromListButton = ctk.CTkButton(master=self.entryFrame, text="Remove selected meal", command=listabol_torles_Calculat)
             self.removeFromListButton.grid(row=3, column=0, padx=20, pady=20)             
     
-            self.mealAddToDatabase = ctk.CTkButton(master=self.mealFrame, text="Add to the database", command=hozza_adás_Meals)
+            self.mealAddToDatabase = ctk.CTkButton(master=self.tab3, text="Add to the database", command=hozza_adás_Meals)
             self.mealAddToDatabase.grid(row=6, padx=20, pady=10, column=1)
-            self.delFromDatabase = ctk.CTkButton(master=self.mealFrame, text="Delete", command=listabol_torles_Meals,fg_color="#D12727",font=(None,14),hover_color="#811A1A")
+            self.delFromDatabase = ctk.CTkButton(master=self.tab3, text="Delete", command=listabol_torles_Meals,fg_color="#D12727",font=(None,14),hover_color="#811A1A")
             self.delFromDatabase.grid(row=6, padx=20, pady=10, column=2)
     
             #self.get_datum_button = ctk.CTkButton(master=self.nap, text="kilistázás", command="""get_datum""")
             #self.get_datum_button.grid(row=1, padx=20, pady=10, column=1)
         buttons()
 
-class Root(ctk.CTk):
-    def __init__(self):
-            super().__init__()
 
-            self.tab_view = MyTabView(master=self)
-            self.tab_view.grid(row=0, column=0, padx=20, pady=20)
-
-root = Root()
+root = App()
 root.title("TheFitnessApp")
+root.geometry("1000x400")
 root.mainloop()
