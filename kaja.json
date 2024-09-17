@@ -112,6 +112,30 @@
                 "",
                 ""
             ]
+        },
+        {
+            "Name": "Rizs2",
+            "Calories/100": "345",
+            "Fat": "0.9",
+            "Carbohydrate": "76.5",
+            "Protein": "7",
+            "When": [
+                "",
+                "",
+                ""
+            ]
+        },
+        {
+            "Name": "Egg2",
+            "Calories/100": "143",
+            "Fat": "10",
+            "Carbohydrate": "1",
+            "Protein": "13",
+            "When": [
+                "",
+                "",
+                ""
+            ]
         }
     ],
     "Calories": [
@@ -258,6 +282,15 @@
             "Carbohydrate_multiplication": 70.0,
             "Protein_multiplication": 12.0,
             "datum": "09/04/2024"
+        },
+        {
+            "Neve": "Durum Pasta",
+            "Portion/each": 100,
+            "Calories_multiplication": 358.0,
+            "Fat_multiplication": 1.5,
+            "Carbohydrate_multiplication": 70.0,
+            "Protein_multiplication": 12.0,
+            "datum": "14/07/2024"
         }
     ]
 }

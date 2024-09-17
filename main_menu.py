@@ -5,6 +5,16 @@ import json
 from CTkListbox import *
 from datetime import datetime
 from tkcalendar import *
+import matplotlib.pyplot as plt
+import numpy as np
+
+days_name_dic = {"Monday" : 0,
+                 "Tuesday" : 1,
+                 "Wednesday" : 2,
+                 "Thursday" : 3,
+                 "Friday" : 4,
+                 "Saturday" : 5,
+                 "Sunday" : 6}
 
 datum = datetime.today().strftime("%d/%m/%Y")
 
@@ -18,13 +28,16 @@ for nemtom in adat["Meals"]:
       kaja.append(nemtom["Name"])
 
 
-ctk.set_appearance_mode("System")
 ctk.set_appearance_mode("dark")
 ctk.set_default_color_theme("dark-blue")    
 
 class App(ctk.CTk):
     def __init__(self, **kwargs):
         super().__init__( **kwargs)
+
+        self.title("TheFitnessApp")
+        self.geometry("1000x400")
+        
 
         # declare Tabview
         self.tab_view = ctk.CTkTabview(self)
@@ -43,34 +56,33 @@ class App(ctk.CTk):
         def All_GUI(self):
             style = ttk.Style()
             style.theme_create("DarkTheme", parent="alt", settings={
-            "TNotebook": {"configure": {"tabmargins": [2, 5, 2, 0], "background": "#212121"}},
-            "TNotebook.Tab": {"configure": {"padding": [5, 1], "background": "#1e1e1e", "foreground": "#d9d9d9"},
-                              "map": {"background": [("selected", "#323232")],
-                                      "foreground": [("selected", "#ffffff")]}},
-            "TFrame": {"configure": {"background": "#212121"}}
+                "TNotebook":        {"configure": {"tabmargins": [2, 5, 2, 0], "background": "#212121"}},
+                "TNotebook.Tab":    {"configure": {"padding": [5, 1], "background": "#1e1e1e", "foreground": "#d9d9d9"},
+                "map":              {"background": [("selected", "#323232")],
+                "foreground":       [("selected", "#ffffff")]}},
+                "TFrame":           {"configure": {"background": "#212121"}}
             })
             style.theme_use("DarkTheme")
-            #Frame for Calendar tab
+
+            #Frame for " Calendar " tab
             self.calendarFrame = ctk.CTkFrame(master=self.tab1, border_width=2)
-            self.calendarFrame.grid(row=0, column=0, padx=20, pady=10)
+            self.calendarFrame.grid(row=0, column=0, padx=20, pady=10, sticky="w")
 
-            self.tab_calendar = ttk.Notebook(master=self.tab1)
-            self.tab_calendar.grid(row=0, column=0, pady=0)
-            self.nap = ttk.Frame(self.tab_calendar)
-            self.het = ttk.Frame(self.tab_calendar)
-            self.honap = ttk.Frame(self.tab_calendar)
-            self.tab_calendar.add(self.nap, text="Nap")
-            self.tab_calendar.add(self.het, text="Hét")
-            self.tab_calendar.add(self.honap, text="Hónap")
+            #self.asdfghj = ctk.CTkLabel(master=self.tab1, border_width=2)
+            #self.asdfghj.grid(row=0, column=1, padx=20, pady=10, sticky="w")
 
-            #Frame for calculate tab
+            #self.tab_calendar = ttk.Notebook(master=self.tab1)
+            #self.tab_calendar.grid(row=0, column=0, pady=0)
+            #self.nap = ttk.Frame(self.tab_calendar)
+            #self.het = ttk.Frame(self.tab_calendar)
+            #self.honap = ttk.Frame(self.tab_calendar)
+            #self.tab_calendar.add(self.nap, text="Nap")
+            #self.tab_calendar.add(self.het, text="Hét")
+            #self.tab_calendar.add(self.honap, text="Hónap")
+
+            #Frame for " calculate " tab
             self.entryFrame = ctk.CTkFrame(master=self.tab2, border_width=2)
             self.entryFrame.grid(row=0, column=0, padx=20, pady=10)
-
-            #Frame for add new meal tab
-            #self.mealFrame = ctk.CTkFrame(master=self.tab3, border_width=2)
-            #self.mealFrame.grid(row=0, column=0, padx=20, pady=10)
-            
 
             #Labels for tab " Add new meal "
             self.nameLabel = ctk.CTkLabel(master=self.tab3, text="Name: ")
@@ -97,25 +109,43 @@ class App(ctk.CTk):
             self.allCaloriesCalculated.grid(column=1,row=4,padx=20, pady=10 )
 
             #Labels for tab " Calendar "
-            self.datumLabel = ctk.CTkLabel(master=self.nap, text="")
-            self.datumLabel.grid(row=1, column=0, padx=20, pady=10)
+            self.datumLabel = ctk.CTkLabel(master=self.tab1, text="ASSSD")
+            self.datumLabel.grid(row=2, column=0, padx=20, pady=10)
 
             #Listbox for tab " Calculate "
             self.listBox = CTkListbox(master=self.tab2,width=500)
             self.listBox.grid(column=1, row=0)
 
             #Listbox for tab " Calendar "
-            self.calendarlistBox = CTkListbox(master=self.nap,width=500)
-            self.calendarlistBox.grid(column=0, row=0, padx=20, pady=10)
+            #self.calendarlistBox = CTkListbox(master=self.tab1,width=500)
+            #self.calendarlistBox.grid(column=0, row=1, padx=20, pady=0)
+            ttk.style = ttk.Style()
+            ttk.style.configure("Treeview", font=("helvetica",10))
+            ttk.style.configure("Treeview.Heading", font=("helvetica",10, "bold"))
+            self.calendarTreeView = ttk.Treeview(master=self.tab1, height=5, columns=("név","mennyiség", "kalória", "zsír", "szénhidrát", "fehérje"),)
+            self.calendarTreeView.grid(column=0, row=1, padx=10, pady=0)
+            self.calendarTreeView.column("#0",width=15 ,stretch =False)
+            self.calendarTreeView.heading("név", text="Név", anchor="w")
+            self.calendarTreeView.column("név",width=150 ,stretch =True)
+            self.calendarTreeView.heading("mennyiség", text="Mennyiség", anchor="w")
+            self.calendarTreeView.column("mennyiség",width=80 ,stretch =True)
+            self.calendarTreeView.heading("kalória", text="Kalória", anchor="w")
+            self.calendarTreeView.column("kalória",width=80 ,stretch =True)
+            self.calendarTreeView.heading("zsír", text="Zsír", anchor="w")
+            self.calendarTreeView.column("zsír",width=80 ,stretch =True)
+            self.calendarTreeView.heading("szénhidrát", text="Szénhidrát", anchor="w")
+            self.calendarTreeView.column("szénhidrát",width=80 ,stretch =True)
+            self.calendarTreeView.heading("fehérje", text="Fehérje", anchor="w")
+            self.calendarTreeView.column("fehérje",width=80 ,stretch =True)
 
             # Calendar
-            self.calend = Calendar(master=self.nap, selectmode="day",
+            self.calend = Calendar(master=self.tab1, selectmode="day",
                                    year=int(datum[6:10]), month=int(datum[3:5]), day=int(datum[0:2]),
                                    date_pattern='dd/mm/yyyy',
                                    selectbackground="#4d4d4d",
                                    showweeknumbers=False,
                                    showothermonthdays=False)
-            self.calend.grid(row=0, column=1, padx=20, pady=10)
+            self.calend.grid(row=1, column=1, padx=20, pady=10)
 
             #Variables for tab " Add new meal " checkboxes
             self.checkboxBreakfast = ctk.StringVar()
@@ -146,6 +176,7 @@ class App(ctk.CTk):
             self.combobox.set("")
             self.portionEntry = ctk.CTkEntry(master=self.entryFrame)
             self.portionEntry.grid(row=1, column=1, padx=20, pady=10)
+
             #Entries for tab " Add new meal "
             self.comboboxMeal = ctk.CTkComboBox(master=self.tab3, values=kaja, command=Entry_k_visszaírása)
             self.comboboxMeal.grid(row=6, column=0, padx=20, pady=10)
@@ -162,12 +193,43 @@ class App(ctk.CTk):
                 for j in i.values():
                     y += 1
 
-                    self.e = entry = ctk.CTkEntry(self.tab2p, placeholder_text='CTkEntry', width=140, height=28)
+                    self.e = entry = ctk.CTkEntry(self.tab2, placeholder_text='CTkEntry', width=140, height=28)
                     entry.place(x=10, y=10)
 
                     self.e.grid(row=x, column=y)
                     self.e.insert("end", j)
                 y = 0
+
+        def create_circle_meter(percentage, amount):
+            # Validate the input
+            if not 0 <= percentage <= 100:
+                raise ValueError("Percentage must be between 0 and 100")
+
+            # Create a figure and a single subplot
+            fig, ax = plt.subplots(figsize=(6, 6), subplot_kw=dict(aspect="equal"))
+
+            # Define the size of the wedge for the given percentage
+            size = 0.3
+            vals = np.array([percentage, 100 - percentage])
+
+            # Create a pie chart with the given percentage
+            wedges, texts = ax.pie(vals, wedgeprops=dict(width=size, edgecolor='w'), startangle=90)
+
+            # Set the aspect ratio to be equal
+            ax.set(aspect="equal")
+
+            # Add a circle at the center
+            centre_circle = plt.Circle((0, 0), 0.70, fc='white')
+            fig.gca().add_artist(centre_circle)
+
+            # Annotate the percentage in the center of the circle
+            plt.text(0, 0, f"{percentage:.0f}%", ha='center', va='center', fontsize=24, color='black')
+
+            # Add the amount below the circle
+            plt.text(0, -1.3, f"Amount: {amount}", ha='center', va='center', fontsize=14, color='black')
+
+            # Display the plot
+            plt.show()
 
         def Entry_k_visszaírása(choice):
             self.nameEntry.delete(0,"end")
@@ -190,6 +252,9 @@ class App(ctk.CTk):
         All_GUI(self)
 
         def get_datum(event):
+            selected_date = self.calend.selection_get()
+            day_of_week = selected_date.strftime('%A')
+            print(f"Selected date: {selected_date.strftime('%d/%m/%Y')}, Day of the week: {day_of_week}")
             all_kcal_sum = 0
             all_eatMuch_sum = 0
             all_eatFat_sum = 0
@@ -197,14 +262,15 @@ class App(ctk.CTk):
             all_eatProt_sum = 0
             self.calendarlistBox.delete(1,"end")
             curent_data = self.calend.get_date()
+            idk = int(curent_data[0:2])- days_name_dic.get(day_of_week)
             for i in adat["Calories"]:
-                neve = i["Neve"]
-                eatMuch = i["Portion/each"]
-                mennyisege = i["Calories_multiplication"]
-                eatFat = i["Fat_multiplication"]
-                eatCarb = i["Carbohydrate_multiplication"]
-                eatProt = i["Protein_multiplication"]
                 if i["datum"] == curent_data:
+                    neve = i["Neve"]
+                    eatMuch = i["Portion/each"]
+                    mennyisege = i["Calories_multiplication"]
+                    eatFat = i["Fat_multiplication"]
+                    eatCarb = i["Carbohydrate_multiplication"]
+                    eatProt = i["Protein_multiplication"]
                     if len(neve) <= 8:
                         self.calendarlistBox.insert("end",f"{neve}\t\t{eatMuch}\t\t{mennyisege}\t{eatFat}\t{eatCarb}\t\t{eatProt}")
                     else:
@@ -232,16 +298,19 @@ class App(ctk.CTk):
 
             # insert and refresh listbox
             self.listBox.insert(0,f"Név\t\tMennyiség\tkalória\tzsír\tszénhidrát\tprotein")
-            self.calendarlistBox.insert(0,f"Név\t\tMennyiség\tkalória\tzsír\tszénhidrát\tprotein")
+            #self.calendarlistBox.insert(0,f"Név\t\tMennyiség\tkalória\tzsír\tszénhidrát\tprotein")
 
             for i in adat["Calories"]:
                 if i["datum"] == datum:
+                    tápöl = (i["Neve"], i["Portion/each"], i["Calories_multiplication"], i["Fat_multiplication"], i["Carbohydrate_multiplication"], i["Protein_multiplication"])
                     eatWhat = i["Neve"]
                     eatMuch = i["Portion/each"]
                     eatSoMuch = i["Calories_multiplication"]
                     eatFat = i["Fat_multiplication"]
                     eatCarb = i["Carbohydrate_multiplication"]
                     eatProt = i["Protein_multiplication"]
+                    #for táp in tápöl:
+                    self.calendarTreeView.insert("",index="end", values=tápöl)
                     if len(eatWhat) >8:
                         self.listBox.insert('end',f"{eatWhat}\t{eatMuch}\t\t{eatSoMuch}\t{eatFat}\t{eatCarb}\t\t{eatProt}")
                     else:
@@ -366,6 +435,7 @@ class App(ctk.CTk):
                     adat["Meals"].insert(számláló,adatok)
                     json.dump(adat, f, indent=4)
                 self.comboboxMeal.configure(values=kaja)
+                self.combobox.configure(values=kaja)
 
             # ha NINCS ez fut le
             else:
@@ -374,6 +444,7 @@ class App(ctk.CTk):
                     json.dump(adat, loader, indent=4)
                 kaja.append(adatok["Name"])
                 self.comboboxMeal.configure(values=kaja)
+                self.combobox.configure(values=kaja)
 
         def listabol_torles_Meals():
             n = 0
@@ -408,13 +479,19 @@ class App(ctk.CTk):
             self.mealAddToDatabase.grid(row=6, padx=20, pady=10, column=1)
             self.delFromDatabase = ctk.CTkButton(master=self.tab3, text="Delete", command=listabol_torles_Meals,fg_color="#D12727",font=(None,14),hover_color="#811A1A")
             self.delFromDatabase.grid(row=6, padx=20, pady=10, column=2)
+
+            button_nap = ctk.CTkButton(master=self.calendarFrame, text="nap", width=50, height=25,fg_color="#212121")
+            button_nap.grid(row=0, column=0, pady=0)
+            button_het = ctk.CTkButton(master=self.calendarFrame, text="hét", width=50, height=25,fg_color="#212121")
+            button_het.grid(row=0, column=1, pady=0)
+            button_honap = ctk.CTkButton(master=self.calendarFrame, text="hónap", width=50, height=25,fg_color="#212121")
+            button_honap.grid(row=0, column=2, pady=0)
     
             #self.get_datum_button = ctk.CTkButton(master=self.nap, text="kilistázás", command="""get_datum""")
             #self.get_datum_button.grid(row=1, padx=20, pady=10, column=1)
         buttons()
 
+        self.mainloop()
 
-root = App()
-root.title("TheFitnessApp")
-root.geometry("1000x400")
-root.mainloop()
+
+App()
