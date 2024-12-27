@@ -26,6 +26,7 @@ with open('kaja.json', "r", newline="") as hami:
 kaja= []
 for nemtom in adat["Meals"]:
       kaja.append(nemtom["Name"])
+print(nemtom)
 
 
 ctk.set_appearance_mode("dark")
@@ -260,7 +261,7 @@ class App(ctk.CTk):
             all_eatFat_sum = 0
             all_eatCarb_sum = 0
             all_eatProt_sum = 0
-            self.calendarlistBox.delete(1,"end")
+            #self.calendarTreeView.delete(1,"end")
             curent_data = self.calend.get_date()
             idk = int(curent_data[0:2])- days_name_dic.get(day_of_week)
             for i in adat["Calories"]:
@@ -272,9 +273,9 @@ class App(ctk.CTk):
                     eatCarb = i["Carbohydrate_multiplication"]
                     eatProt = i["Protein_multiplication"]
                     if len(neve) <= 8:
-                        self.calendarlistBox.insert("end",f"{neve}\t\t{eatMuch}\t\t{mennyisege}\t{eatFat}\t{eatCarb}\t\t{eatProt}")
+                        self.calendarTreeView.insert("","end",[neve,eatMuch,mennyisege,eatFat,eatCarb,eatProt])
                     else:
-                        self.calendarlistBox.insert("end",f"{neve}\t{eatMuch}\t\t{mennyisege}\t{eatFat}\t{eatCarb}\t\t{eatProt}")
+                        self.calendarTreeView.insert("","end",[neve,eatMuch,mennyisege,eatFat,eatCarb,eatProt])
                     all_kcal_sum += mennyisege
                     all_eatMuch_sum += eatMuch
                     all_eatFat_sum += eatFat
@@ -312,9 +313,9 @@ class App(ctk.CTk):
                     #for táp in tápöl:
                     self.calendarTreeView.insert("",index="end", values=tápöl)
                     if len(eatWhat) >8:
-                        self.listBox.insert('end',f"{eatWhat}\t{eatMuch}\t\t{eatSoMuch}\t{eatFat}\t{eatCarb}\t\t{eatProt}")
+                        self.calendarTreeView.insert('end',f"{eatWhat}\t{eatMuch}\t\t{eatSoMuch}\t{eatFat}\t{eatCarb}\t\t{eatProt}")
                     else:
-                         self.listBox.insert('end',f"{eatWhat}\t\t{eatMuch}\t\t{eatSoMuch}\t{eatFat}\t{eatCarb}\t\t{eatProt}")
+                         self.calendarTreeView.insert('end',f"{eatWhat}\t\t{eatMuch}\t\t{eatSoMuch}\t{eatFat}\t{eatCarb}\t\t{eatProt}")
                     # modify all kcal
                     self.inClassSum += eatSoMuch
             self.allCaloriesCalculated.configure(text=f"{self.inClassSum}   Kcal")
