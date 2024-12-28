@@ -1,7 +1,7 @@
 {
     "Settings": [
         {
-            "ID_counter": 3
+            "ID_counter": 1
         }
     ],
     "Meals": [
@@ -296,6 +296,87 @@
             "Carbohydrate_multiplication": 70.0,
             "Protein_multiplication": 12.0,
             "datum": "14/07/2024"
+        },
+        {
+            "Neve": "Durum Pasta",
+            "Portion/each": 50,
+            "Calories_multiplication": 179.0,
+            "Fat_multiplication": 0.75,
+            "Carbohydrate_multiplication": 35.0,
+            "Protein_multiplication": 6.0,
+            "datum": "27/12/2024"
+        },
+        {
+            "Neve": "Egg",
+            "Portion/each": 100,
+            "Calories_multiplication": 143.0,
+            "Fat_multiplication": 10.0,
+            "Carbohydrate_multiplication": 1.0,
+            "Protein_multiplication": 13.0,
+            "datum": "27/12/2024"
+        },
+        {
+            "Neve": "Bab konzerv",
+            "Portion/each": 100,
+            "Calories_multiplication": 92.0,
+            "Fat_multiplication": 1.0,
+            "Carbohydrate_multiplication": 13.2,
+            "Protein_multiplication": 8.2,
+            "datum": "27/12/2024"
+        },
+        {
+            "Neve": "Rizs",
+            "Portion/each": 100,
+            "Calories_multiplication": 345.0,
+            "Fat_multiplication": 0.9,
+            "Carbohydrate_multiplication": 76.5,
+            "Protein_multiplication": 7.0,
+            "datum": "27/12/2024"
+        },
+        {
+            "Neve": "Egg",
+            "Portion/each": 100,
+            "Calories_multiplication": 143.0,
+            "Fat_multiplication": 10.0,
+            "Carbohydrate_multiplication": 1.0,
+            "Protein_multiplication": 13.0,
+            "datum": "27/12/2024"
+        },
+        {
+            "Neve": "sonka",
+            "Portion/each": 100,
+            "Calories_multiplication": 175.0,
+            "Fat_multiplication": 36.0,
+            "Carbohydrate_multiplication": 20.0,
+            "Protein_multiplication": 60.0,
+            "datum": "28/12/2024"
+        },
+        {
+            "Neve": "Egg",
+            "Portion/each": 100,
+            "Calories_multiplication": 143.0,
+            "Fat_multiplication": 10.0,
+            "Carbohydrate_multiplication": 1.0,
+            "Protein_multiplication": 13.0,
+            "datum": "28/12/2024"
+        },
+        {
+            "Neve": "Durum Pasta",
+            "Portion/each": 50,
+            "Calories_multiplication": 179.0,
+            "Fat_multiplication": 0.75,
+            "Carbohydrate_multiplication": 35.0,
+            "Protein_multiplication": 6.0,
+            "datum": "28/12/2024"
+        },
+        {
+            "Neve": "Durum Pasta",
+            "Portion/each": 50,
+            "Calories_multiplication": 179.0,
+            "Fat_multiplication": 0.75,
+            "Carbohydrate_multiplication": 35.0,
+            "Protein_multiplication": 6.0,
+            "datum": "28/12/2024"
         }
     ]
 }

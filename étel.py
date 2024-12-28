@@ -4,7 +4,7 @@ import json
 class Etel:
     # az "adat" változóba kiszedem az össze json recordot
     with open('kaja.json', "r") as x:
-        adat = json.load(x)
+        adat:list = json.load(x)
 
     counter = adat["Settings"][0]["ID_counter"]
 
@@ -18,8 +18,7 @@ class Etel:
 
     #
     def write_ID(self):
-        Etel.counter+=1
-        Etel.adat["Settings"][0]["ID_counter"] = Etel.counter
+        Etel.adat["Settings"][0]["ID_counter"] = Etel.counter +1
         with open("kaja.json", "w") as file:
             json.dump(Etel.adat, file, indent=4)
 
@@ -27,7 +26,7 @@ class Etel:
         pass
 
     def __repr__(self):
-        print(f"ID: {self.ID}, Név:{self.name}")
+        return f"ID: {self.ID}, Név: {self.name}"
 
 s = Etel("asdfg",45,75,23,500)
 s.write_ID()

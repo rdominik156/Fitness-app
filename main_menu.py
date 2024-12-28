@@ -115,14 +115,14 @@ class App(ctk.CTk):
 
             #Listbox for tab " Calculate "
             self.listBox = CTkListbox(master=self.tab2,width=500)
-            self.listBox.grid(column=1, row=0)
+            self.listBox.grid(column=2, row=0)
 
             #Listbox for tab " Calendar "
             #self.calendarlistBox = CTkListbox(master=self.tab1,width=500)
             #self.calendarlistBox.grid(column=0, row=1, padx=20, pady=0)
             ttk.style = ttk.Style()
-            ttk.style.configure("Treeview", font=("helvetica",10))
-            ttk.style.configure("Treeview.Heading", font=("helvetica",10, "bold"))
+            ttk.style.configure("Treeview", font=("helvetica",10),fieldbackground="#212121", background="#212121", foreground="white")
+            ttk.style.configure("Treeview.Heading", font=("helvetica",10, "bold"),background="#4a4a4a", foreground="white",fieldbackground="#212121")
             self.calendarTreeView = ttk.Treeview(master=self.tab1, height=5, columns=("név","mennyiség", "kalória", "zsír", "szénhidrát", "fehérje"),)
             self.calendarTreeView.grid(column=0, row=1, padx=10, pady=0)
             self.calendarTreeView.column("#0",width=15 ,stretch =False)
@@ -138,6 +138,22 @@ class App(ctk.CTk):
             self.calendarTreeView.column("szénhidrát",width=80 ,stretch =True)
             self.calendarTreeView.heading("fehérje", text="Fehérje", anchor="w")
             self.calendarTreeView.column("fehérje",width=80 ,stretch =True)
+
+            self.calculateTreeView = ttk.Treeview(master=self.tab2, height=5, columns=("név","mennyiség", "kalória", "zsír", "szénhidrát", "fehérje"),)
+            self.calculateTreeView.grid(column=1, row=0, padx=10, pady=0)
+            self.calculateTreeView.column("#0",width=15 ,stretch =False)
+            self.calculateTreeView.heading("név", text="Név", anchor="w")
+            self.calculateTreeView.column("név",width=150 ,stretch =True)
+            self.calculateTreeView.heading("mennyiség", text="Mennyiség", anchor="w")
+            self.calculateTreeView.column("mennyiség",width=80 ,stretch =True)
+            self.calculateTreeView.heading("kalória", text="Kalória", anchor="w")
+            self.calculateTreeView.column("kalória",width=80 ,stretch =True)
+            self.calculateTreeView.heading("zsír", text="Zsír", anchor="w")
+            self.calculateTreeView.column("zsír",width=80 ,stretch =True)
+            self.calculateTreeView.heading("szénhidrát", text="Szénhidrát", anchor="w")
+            self.calculateTreeView.column("szénhidrát",width=80 ,stretch =True)
+            self.calculateTreeView.heading("fehérje", text="Fehérje", anchor="w")
+            self.calculateTreeView.column("fehérje",width=80 ,stretch =True)
 
             # Calendar
             self.calend = Calendar(master=self.tab1, selectmode="day",
@@ -261,26 +277,23 @@ class App(ctk.CTk):
             all_eatFat_sum = 0
             all_eatCarb_sum = 0
             all_eatProt_sum = 0
-            #self.calendarTreeView.delete(1,"end")
+
+            #elemek kitörlése
+            for item in self.calendarTreeView.get_children():
+                self.calendarTreeView.delete(item)
+
             curent_data = self.calend.get_date()
-            idk = int(curent_data[0:2])- days_name_dic.get(day_of_week)
             for i in adat["Calories"]:
                 if i["datum"] == curent_data:
-                    neve = i["Neve"]
-                    eatMuch = i["Portion/each"]
-                    mennyisege = i["Calories_multiplication"]
-                    eatFat = i["Fat_multiplication"]
-                    eatCarb = i["Carbohydrate_multiplication"]
-                    eatProt = i["Protein_multiplication"]
-                    if len(neve) <= 8:
-                        self.calendarTreeView.insert("","end",[neve,eatMuch,mennyisege,eatFat,eatCarb,eatProt])
-                    else:
-                        self.calendarTreeView.insert("","end",[neve,eatMuch,mennyisege,eatFat,eatCarb,eatProt])
-                    all_kcal_sum += mennyisege
-                    all_eatMuch_sum += eatMuch
-                    all_eatFat_sum += eatFat
-                    all_eatCarb_sum += eatCarb
-                    all_eatProt_sum += eatProt
+
+                    tápöl = (i["Neve"], i["Portion/each"], i["Calories_multiplication"], i["Fat_multiplication"], i["Carbohydrate_multiplication"], i["Protein_multiplication"])
+                    self.calendarTreeView.insert("",index="end", values=tápöl)
+
+                    all_kcal_sum += i["Calories_multiplication"]
+                    all_eatMuch_sum += i["Portion/each"]
+                    all_eatFat_sum += i["Fat_multiplication"]
+                    all_eatCarb_sum += i["Carbohydrate_multiplication"]
+                    all_eatProt_sum += i["Protein_multiplication"]
             self.datumLabel.configure(text=f"Összes:\t\t{all_eatMuch_sum}\t\t{all_kcal_sum}\t{all_eatFat_sum}\t{all_eatCarb_sum}\t\t{all_eatProt_sum}         ")        
         self.calend.bind("<<CalendarSelected>>", get_datum)
 
@@ -312,12 +325,13 @@ class App(ctk.CTk):
                     eatProt = i["Protein_multiplication"]
                     #for táp in tápöl:
                     self.calendarTreeView.insert("",index="end", values=tápöl)
-                    if len(eatWhat) >8:
-                        self.calendarTreeView.insert('end',f"{eatWhat}\t{eatMuch}\t\t{eatSoMuch}\t{eatFat}\t{eatCarb}\t\t{eatProt}")
-                    else:
-                         self.calendarTreeView.insert('end',f"{eatWhat}\t\t{eatMuch}\t\t{eatSoMuch}\t{eatFat}\t{eatCarb}\t\t{eatProt}")
+                    self.calculateTreeView.insert("",index="end", values=tápöl)
+                    #if len(eatWhat) >8:
+                    #    self.calendarTreeView.insert('end',f"{eatWhat}\t{eatMuch}\t\t{eatSoMuch}\t{eatFat}\t{eatCarb}\t\t{eatProt}")
+                    #else:
+                    #     self.calendarTreeView.insert('end',f"{eatWhat}\t\t{eatMuch}\t\t{eatSoMuch}\t{eatFat}\t{eatCarb}\t\t{eatProt}")
                     # modify all kcal
-                    self.inClassSum += eatSoMuch
+                    self.inClassSum += i["Calories_multiplication"]
             self.allCaloriesCalculated.configure(text=f"{self.inClassSum}   Kcal")
         refresh()
 
@@ -344,6 +358,9 @@ class App(ctk.CTk):
                     break
                 else:
                      x += 1
+
+            tápöl = (Neve, Portion_per_each, cal_mul, fat_mul, carb_mul, prot_mul)
+            self.calculateTreeView.insert("",index="end", values=tápöl)        
             if len(Neve) >8:
                 self.listBox.insert('end',f"{Neve}\t{Portion_per_each}\t\t{cal}\t{fat}\t{carb}\t{prot}")
             else:
@@ -371,6 +388,10 @@ class App(ctk.CTk):
 
         def listabol_torles_Calculat():
             n = 0
+            s_item = self.calculateTreeView.selection()
+            if s_item:
+                self.calculateTreeView.delete(s_item)
+
             selected_item = self.listBox.curselection()
             if selected_item != None:
                 selected_name = self.listBox.get(selected_item)
