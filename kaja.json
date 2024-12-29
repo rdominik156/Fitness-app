@@ -377,6 +377,33 @@
             "Carbohydrate_multiplication": 35.0,
             "Protein_multiplication": 6.0,
             "datum": "28/12/2024"
+        },
+        {
+            "Neve": "Durum Pasta",
+            "Portion/each": 100,
+            "Calories_multiplication": 358.0,
+            "Fat_multiplication": 1.5,
+            "Carbohydrate_multiplication": 70.0,
+            "Protein_multiplication": 12.0,
+            "datum": "29/12/2024"
+        },
+        {
+            "Neve": "Bab konzerv",
+            "Portion/each": 50,
+            "Calories_multiplication": 46.0,
+            "Fat_multiplication": 0.5,
+            "Carbohydrate_multiplication": 6.6,
+            "Protein_multiplication": 4.1,
+            "datum": "29/12/2024"
+        },
+        {
+            "Neve": "Rizs",
+            "Portion/each": 50,
+            "Calories_multiplication": 172.5,
+            "Fat_multiplication": 0.45,
+            "Carbohydrate_multiplication": 38.25,
+            "Protein_multiplication": 3.5,
+            "datum": "29/12/2024"
         }
     ]
 }

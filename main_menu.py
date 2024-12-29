@@ -113,16 +113,11 @@ class App(ctk.CTk):
             self.datumLabel = ctk.CTkLabel(master=self.tab1, text="ASSSD")
             self.datumLabel.grid(row=2, column=0, padx=20, pady=10)
 
-            #Listbox for tab " Calculate "
-            self.listBox = CTkListbox(master=self.tab2,width=500)
-            self.listBox.grid(column=2, row=0)
-
             #Listbox for tab " Calendar "
-            #self.calendarlistBox = CTkListbox(master=self.tab1,width=500)
-            #self.calendarlistBox.grid(column=0, row=1, padx=20, pady=0)
             ttk.style = ttk.Style()
             ttk.style.configure("Treeview", font=("helvetica",10),fieldbackground="#212121", background="#212121", foreground="white")
             ttk.style.configure("Treeview.Heading", font=("helvetica",10, "bold"),background="#4a4a4a", foreground="white",fieldbackground="#212121")
+            style.map('Treeview', background=[('selected', '#BFBFBF')])
             self.calendarTreeView = ttk.Treeview(master=self.tab1, height=5, columns=("név","mennyiség", "kalória", "zsír", "szénhidrát", "fehérje"),)
             self.calendarTreeView.grid(column=0, row=1, padx=10, pady=0)
             self.calendarTreeView.column("#0",width=15 ,stretch =False)
@@ -310,26 +305,12 @@ class App(ctk.CTk):
         # variable of display all kcal
             self.inClassSum = 0
 
-            # insert and refresh listbox
-            self.listBox.insert(0,f"Név\t\tMennyiség\tkalória\tzsír\tszénhidrát\tprotein")
-            #self.calendarlistBox.insert(0,f"Név\t\tMennyiség\tkalória\tzsír\tszénhidrát\tprotein")
-
             for i in adat["Calories"]:
                 if i["datum"] == datum:
                     tápöl = (i["Neve"], i["Portion/each"], i["Calories_multiplication"], i["Fat_multiplication"], i["Carbohydrate_multiplication"], i["Protein_multiplication"])
-                    eatWhat = i["Neve"]
-                    eatMuch = i["Portion/each"]
-                    eatSoMuch = i["Calories_multiplication"]
-                    eatFat = i["Fat_multiplication"]
-                    eatCarb = i["Carbohydrate_multiplication"]
-                    eatProt = i["Protein_multiplication"]
                     #for táp in tápöl:
                     self.calendarTreeView.insert("",index="end", values=tápöl)
                     self.calculateTreeView.insert("",index="end", values=tápöl)
-                    #if len(eatWhat) >8:
-                    #    self.calendarTreeView.insert('end',f"{eatWhat}\t{eatMuch}\t\t{eatSoMuch}\t{eatFat}\t{eatCarb}\t\t{eatProt}")
-                    #else:
-                    #     self.calendarTreeView.insert('end',f"{eatWhat}\t\t{eatMuch}\t\t{eatSoMuch}\t{eatFat}\t{eatCarb}\t\t{eatProt}")
                     # modify all kcal
                     self.inClassSum += i["Calories_multiplication"]
             self.allCaloriesCalculated.configure(text=f"{self.inClassSum}   Kcal")
@@ -344,7 +325,6 @@ class App(ctk.CTk):
             # Calories_multiplication kiszámolása
             x = 0
             for i in kaja:
-                #y = adat["Meals"][x]["Calories/100"]
                 if i == Neve:
                     cal = adat["Meals"][x]["Calories/100"]
                     fat = adat["Meals"][x]["Fat"]
@@ -361,10 +341,6 @@ class App(ctk.CTk):
 
             tápöl = (Neve, Portion_per_each, cal_mul, fat_mul, carb_mul, prot_mul)
             self.calculateTreeView.insert("",index="end", values=tápöl)        
-            if len(Neve) >8:
-                self.listBox.insert('end',f"{Neve}\t{Portion_per_each}\t\t{cal}\t{fat}\t{carb}\t{prot}")
-            else:
-                self.listBox.insert('end',f"{Neve}\t\t{Portion_per_each}\t\t{cal}\t{fat}\t{carb}\t\t{prot}")
 
             # Calories dictionary
             caloria_adatok = {
@@ -389,29 +365,24 @@ class App(ctk.CTk):
         def listabol_torles_Calculat():
             n = 0
             s_item = self.calculateTreeView.selection()
+            selected_item = int(s_item[0][1:4])
             if s_item:
+                item = self.calculateTreeView.item(s_item)
+                print(int(s_item[0][1:4]))
+                print(item["values"][2])
+                self.inClassSum -= float(item["values"][2])
+                self.allCaloriesCalculated.configure(text=f"{self.inClassSum}   Kcal")
                 self.calculateTreeView.delete(s_item)
-
-            selected_item = self.listBox.curselection()
-            if selected_item != None:
-                selected_name = self.listBox.get(selected_item)
-                selected_name = list(filter(None,selected_name.split("\t")))
                 for i in adat["Calories"]:
                     if datum == i["datum"]:
-                        if selected_item != 0:
-                            x= adat["Calories"][n+selected_item-1]["Calories_multiplication"]
-                            self.inClassSum -= float(x)
-                            self.inClassSum = float("{:.1f}".format(self.inClassSum))
-                            self.allCaloriesCalculated.configure(text=f"{self.inClassSum}   Kcal")
-                            self.listBox.delete(selected_item)
-                            break
+                        break
                     else:
                         n+=1
             
             if selected_item != 0:
                 del adat["Calories"][n+selected_item-1]
                 with open("kaja.json", "w") as f:
-                    json.dump(adat, f, indent=4)
+                    json.dump(adat, f, indent=4)    
 
 
         def hozza_adás_Meals():
