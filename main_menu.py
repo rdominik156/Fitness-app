@@ -7,6 +7,7 @@ from datetime import datetime
 from tkcalendar import *
 import matplotlib.pyplot as plt
 import numpy as np
+from felhasználo import Felhasznalo
 
 days_name_dic = {"Monday" : 0,
                  "Tuesday" : 1,
@@ -26,7 +27,6 @@ with open('kaja.json', "r", newline="") as hami:
 kaja= []
 for nemtom in adat["Meals"]:
       kaja.append(nemtom["Name"])
-print(nemtom)
 
 
 ctk.set_appearance_mode("dark")
@@ -319,28 +319,18 @@ class App(ctk.CTk):
             #a név és caloria json-hoz adása
         def hozza_adás_calories():
             Neve = self.combobox.get()
-            Portion_per_each = self.portionEntry.get()
-            Portion_per_each =int(Portion_per_each)
+            Portion_per_each = int(self.portionEntry.get())
+            x = kaja.index(Neve)
 
             # Calories_multiplication kiszámolása
-            x = 0
-            for i in kaja:
-                if i == Neve:
-                    cal = adat["Meals"][x]["Calories/100"]
-                    fat = adat["Meals"][x]["Fat"]
-                    carb = adat["Meals"][x]["Carbohydrate"]
-                    prot = adat["Meals"][x]["Protein"]
-                    cal_mul = (int(cal) * Portion_per_each) / 100
-                    fat_mul = (float(fat) * Portion_per_each) / 100
-                    carb_mul = (float(carb) * Portion_per_each) / 100
-                    prot_mul = (float(prot) * Portion_per_each) / 100
-                    x = 0
-                    break
-                else:
-                     x += 1
+            cal_mul = (int(adat["Meals"][x]["Calories/100"]) * Portion_per_each) / 100
+            fat_mul = (float(adat["Meals"][x]["Fat"]) * Portion_per_each) / 100
+            carb_mul = (float(adat["Meals"][x]["Carbohydrate"]) * Portion_per_each) / 100
+            prot_mul = (float(adat["Meals"][x]["Protein"]) * Portion_per_each) / 100
 
-            tápöl = (Neve, Portion_per_each, cal_mul, fat_mul, carb_mul, prot_mul)
-            self.calculateTreeView.insert("",index="end", values=tápöl)        
+            tápöl = [Neve, Portion_per_each, cal_mul, fat_mul, carb_mul, prot_mul]
+            self.calculateTreeView.insert("",index="end", values=tápöl)
+            Felhasznalo.hozzáadás_ételekhez(Felhasznalo("Feri","asd"),tápöl + [datum])
 
             # Calories dictionary
             caloria_adatok = {
@@ -365,11 +355,9 @@ class App(ctk.CTk):
         def listabol_torles_Calculat():
             n = 0
             s_item = self.calculateTreeView.selection()
-            selected_item = int(s_item[0][1:4])
+            selected_item = int(s_item[0][1:4],16)
             if s_item:
                 item = self.calculateTreeView.item(s_item)
-                print(int(s_item[0][1:4]))
-                print(item["values"][2])
                 self.inClassSum -= float(item["values"][2])
                 self.allCaloriesCalculated.configure(text=f"{self.inClassSum}   Kcal")
                 self.calculateTreeView.delete(s_item)

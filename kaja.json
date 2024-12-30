@@ -413,6 +413,24 @@
             "Carbohydrate_multiplication": 0.5,
             "Protein_multiplication": 6.5,
             "datum": "30/12/2024"
+        },
+        {
+            "Neve": "Bab konzerv",
+            "Portion/each": 80,
+            "Calories_multiplication": 73.6,
+            "Fat_multiplication": 0.8,
+            "Carbohydrate_multiplication": 10.56,
+            "Protein_multiplication": 6.56,
+            "datum": "30/12/2024"
+        },
+        {
+            "Neve": "Rizs",
+            "Portion/each": 70,
+            "Calories_multiplication": 241.5,
+            "Fat_multiplication": 0.63,
+            "Carbohydrate_multiplication": 53.55,
+            "Protein_multiplication": 4.9,
+            "datum": "30/12/2024"
         }
     ]
 }
