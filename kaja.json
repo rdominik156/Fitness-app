@@ -404,6 +404,15 @@
             "Carbohydrate_multiplication": 38.25,
             "Protein_multiplication": 3.5,
             "datum": "29/12/2024"
+        },
+        {
+            "Neve": "Egg",
+            "Portion/each": 50,
+            "Calories_multiplication": 71.5,
+            "Fat_multiplication": 5.0,
+            "Carbohydrate_multiplication": 0.5,
+            "Protein_multiplication": 6.5,
+            "datum": "30/12/2024"
         }
     ]
 }

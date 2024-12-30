@@ -488,3 +488,6 @@ class App(ctk.CTk):
 
 
 App()
+
+#to do
+# a naptárnál ha hozzáadok egy új értéket a naphot nem változik meg azonnal a szín

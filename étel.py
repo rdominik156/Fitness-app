@@ -28,6 +28,6 @@ class Etel:
     def __repr__(self):
         return f"ID: {self.ID}, Név: {self.name}"
 
-s = Etel("asdfg",45,75,23,500)
-s.write_ID()
-print(s)
+#s = Etel("asdfg",45,75,23,500)
+#s.write_ID()
+#print(s)
