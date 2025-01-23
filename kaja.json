@@ -1,7 +1,10 @@
 {
+    "felhaszn\u0102\u02c7l\u0102\u0142k": [
+        {}
+    ],
     "Settings": [
         {
-            "ID_counter": 1
+            "ID_counter": 13
         }
     ],
     "Meals": [
@@ -432,5 +435,29 @@
             "Protein_multiplication": 4.9,
             "datum": "30/12/2024"
         }
-    ]
+    ],
+    "hkacsa": {
+        "carb": "30",
+        "protein": "40",
+        "fat": "20",
+        "cal_per_100": "500"
+    },
+    "hkacsak": {
+        "carb": "30",
+        "protein": "40",
+        "fat": "20",
+        "cal_per_100": "500"
+    },
+    "hkacsakdf": {
+        "carb": "30",
+        "protein": "40",
+        "fat": "20",
+        "cal_per_100": "500"
+    },
+    "hkacsakdfj": {
+        "carb": "30",
+        "protein": "40",
+        "fat": "20",
+        "cal_per_100": "500"
+    }
 }

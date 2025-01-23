@@ -158,6 +158,11 @@ class CircleMeterApp(ctk.CTk):
         self.canvas.draw()
         self.canvas.get_tk_widget().pack(pady=20)
 
+def program():
+    lista = ["asd", "qwe", "zxc"].index("qwef")
+    print(lista)
+
 if __name__ == "__main__":
-    app = CircleMeterApp()
-    app.mainloop()
+    #app = CircleMeterApp()
+    #app.mainloop()
+    program()

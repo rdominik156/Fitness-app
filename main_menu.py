@@ -8,6 +8,7 @@ from tkcalendar import *
 import matplotlib.pyplot as plt
 import numpy as np
 from felhasználo import Felhasznalo
+from étel import Etel
 
 days_name_dic = {"Monday" : 0,
                  "Tuesday" : 1,
@@ -33,13 +34,13 @@ ctk.set_appearance_mode("dark")
 ctk.set_default_color_theme("dark-blue")    
 
 class App(ctk.CTk):
-    def __init__(self, **kwargs):
+    def __init__(self, user,**kwargs):
         super().__init__( **kwargs)
-
         self.title("TheFitnessApp")
-        self.geometry("1000x400")
-        
-
+        self.geometry("1000x400")        
+        self.user = user
+        print(self.user)
+        print(self.user.ételek)
         # declare Tabview
         self.tab_view = ctk.CTkTabview(self)
         self.tab_view.pack( padx=20, pady=20)
@@ -328,9 +329,9 @@ class App(ctk.CTk):
             carb_mul = (float(adat["Meals"][x]["Carbohydrate"]) * Portion_per_each) / 100
             prot_mul = (float(adat["Meals"][x]["Protein"]) * Portion_per_each) / 100
 
-            tápöl = [Neve, Portion_per_each, cal_mul, fat_mul, carb_mul, prot_mul]
-            self.calculateTreeView.insert("",index="end", values=tápöl)
-            Felhasznalo.hozzáadás_ételekhez(Felhasznalo("Feri","asd"),tápöl + [datum])
+            lista = [Neve, Portion_per_each, cal_mul, fat_mul, carb_mul, prot_mul]
+            self.calculateTreeView.insert("",index="end", values=lista)
+            self.user.hozzáadás_ételekhez(lista + [datum])
 
             # Calories dictionary
             caloria_adatok = {
@@ -374,7 +375,12 @@ class App(ctk.CTk):
 
 
         def hozza_adás_Meals():
-            Nev = self.nameEntry.get()
+            uj_etel = Etel( self.nameEntry.get(), self.carboEntry.get(), self.ProteinEntry.get(), self.fatEntry.get(), self.calorieEntry.get())
+            uj_etel.write_ID()
+            #uj_etel.write_into_note()
+
+
+            """ Nev = self.nameEntry.get()
             Kaloria = self.calorieEntry.get()
             zsir = self.fatEntry.get()
             szenhidrat = self.carboEntry.get()
@@ -425,7 +431,7 @@ class App(ctk.CTk):
                     json.dump(adat, loader, indent=4)
                 kaja.append(adatok["Name"])
                 self.comboboxMeal.configure(values=kaja)
-                self.combobox.configure(values=kaja)
+                self.combobox.configure(values=kaja) """
 
         def listabol_torles_Meals():
             n = 0
@@ -474,8 +480,50 @@ class App(ctk.CTk):
 
         self.mainloop()
 
+VALID_USERID = "Feri"
+VALID_PASSWORD = "asd"
 
-App()
+def validate_credentials():
+    """Validate the user ID and password."""
+    userid = userid_entry.get()
+    password = password_entry.get()
+
+    if userid == VALID_USERID and password == VALID_PASSWORD:
+        login_window.destroy()
+        user = Felhasznalo(userid, password)
+        user.betöltés()
+        App(user = user)
+    else:
+        tk.messagebox.showerror("Login Failed", "Invalid User ID or Password")
+
+# Create the login window
+login_window = ctk.CTk()
+login_window.title("Login")
+login_window.geometry("300x200")
+
+# User ID label and entry
+userid_label = tk.Label(login_window, text="User ID:", font=("Arial", 12))
+userid_label.pack(pady=5)
+
+userid_entry = tk.Entry(login_window, font=("Arial", 12))
+userid_entry.pack(pady=5)
+
+# Password label and entry
+password_label = tk.Label(login_window, text="Password:", font=("Arial", 12))
+password_label.pack(pady=5)
+
+password_entry = tk.Entry(login_window, font=("Arial", 12), show="*")
+password_entry.pack(pady=5)
+
+# Login button
+login_button = tk.Button(login_window, text="Login", font=("Arial", 12), command=validate_credentials)
+login_button.pack(pady=20)
+
+#App()
+
+# Run the login window
+login_window.mainloop()
+
 
 #to do
 # a naptárnál ha hozzáadok egy új értéket a naphot nem változik meg azonnal a szín

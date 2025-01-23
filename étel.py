@@ -21,9 +21,16 @@ class Etel:
         Etel.adat["Settings"][0]["ID_counter"] = Etel.counter +1
         with open("kaja.json", "w") as file:
             json.dump(Etel.adat, file, indent=4)
+        Etel.counter += 1
 
-    def write_into_note():
-        pass
+    def write_into_note(self):
+        try:
+            Etel.adat[self.name] = {"carb": self.carb, "protein": self.protein, "fat": self.fat, "cal_per_100": self.cal_per_100}
+            with open("kaja.json", "w") as file:
+                json.dump(Etel.adat, file, indent=4)
+        except:
+            pass    # ha már létezik az adott étel, akkor nem írja bele
+        
 
     def __repr__(self):
         return f"ID: {self.ID}, Név: {self.name}"
