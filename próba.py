@@ -102,6 +102,20 @@ import customtkinter as ctk
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 import matplotlib.pyplot as plt
 import numpy as np
+import mysql.connector
+
+conn = mysql.connector.connect(
+    host="localhost",
+    user="",
+    password="",
+    database="test"
+)
+mycursor = conn.cursor()
+mycursor.execute("CREATE DATABASE test")
+
+
+
+
 
 class CircleMeterApp(ctk.CTk):
     def __init__(self):
@@ -159,10 +173,14 @@ class CircleMeterApp(ctk.CTk):
         self.canvas.get_tk_widget().pack(pady=20)
 
 def program():
-    lista = ["asd", "qwe", "zxc"].index("qwef")
-    print(lista)
+    try:
+        lista = ["asd", "qwe", "zxc"].index("qwef")
+        print(lista)
+    except ValueError:
+        print("Value not found in the list")
 
 if __name__ == "__main__":
     #app = CircleMeterApp()
     #app.mainloop()
-    program()
+    #program()
+    pass

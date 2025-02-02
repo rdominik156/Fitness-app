@@ -1,10 +1,33 @@
 {
-    "felhaszn\u0102\u02c7l\u0102\u0142k": [
-        {}
-    ],
-    "Settings": [
+    "Settings": {
+        "U_ID_counter": 6,
+        "F_ID_counter": 18
+    },
+    "users": [
         {
-            "ID_counter": 13
+            "ID": 1,
+            "Name": "Feri",
+            "password": "asd"
+        },
+        {
+            "ID": 2,
+            "Name": "Domi",
+            "password": "qwe"
+        },
+        {
+            "ID": 3,
+            "Name": "B\u0102\u00a9la",
+            "password": "dsa"
+        },
+        {
+            "ID": 4,
+            "Name": "B\u0102\u00a9la",
+            "password": "ert"
+        },
+        {
+            "ID": 5,
+            "Name": "B\u0102\u00a9la",
+            "password": "ghj"
         }
     ],
     "Meals": [
@@ -144,6 +167,21 @@
                 "",
                 ""
             ]
+        },
+        {
+            "Name": "kupi",
+            "carb": 45,
+            "protein": 75,
+            "fat": 23,
+            "cal_per_100": 500
+        },
+        {
+            "ID": 17,
+            "Name": "kupi",
+            "cal_per_100": 500,
+            "fat": 23,
+            "carb": 45,
+            "protein": 75
         }
     ],
     "Calories": [

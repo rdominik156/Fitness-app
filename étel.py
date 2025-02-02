@@ -6,10 +6,10 @@ class Etel:
     with open('kaja.json', "r") as x:
         adat:list = json.load(x)
 
-    counter = adat["Settings"][0]["ID_counter"]
+    counter = adat["Settings"]["F_ID_counter"]
 
     def __init__(self, name, carb, protein, fat, cal_per_100):
-        self.ID = Etel.counter
+        self.Id = Etel.counter
         self.name:str = name
         self.carb:int = carb
         self.protein:int = protein
@@ -18,23 +18,24 @@ class Etel:
 
     #
     def write_ID(self):
-        Etel.adat["Settings"][0]["ID_counter"] = Etel.counter +1
+        Etel.adat["Settings"]["F_ID_counter"] = Etel.counter +1
         with open("kaja.json", "w") as file:
             json.dump(Etel.adat, file, indent=4)
         Etel.counter += 1
 
     def write_into_note(self):
         try:
-            Etel.adat[self.name] = {"carb": self.carb, "protein": self.protein, "fat": self.fat, "cal_per_100": self.cal_per_100}
-            with open("kaja.json", "w") as file:
+            with open("kaja.json", "r+") as file:
+                Etel.adat["Meals"].append({"ID":self.Id,"Name": self.name,"cal_per_100": self.cal_per_100, "fat": self.fat,"carb": self.carb, "protein": self.protein})
                 json.dump(Etel.adat, file, indent=4)
         except:
             pass    # ha már létezik az adott étel, akkor nem írja bele
         
 
     def __repr__(self):
-        return f"ID: {self.ID}, Név: {self.name}"
+        return f"ID: {self.Id}, Név: {self.name}"
 
-#s = Etel("asdfg",45,75,23,500)
+#s = Etel("kupi",45,75,23,500)
 #s.write_ID()
+#s.write_into_note()
 #print(s)

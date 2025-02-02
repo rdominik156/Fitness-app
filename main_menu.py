@@ -480,46 +480,117 @@ class App(ctk.CTk):
 
         self.mainloop()
 
-VALID_USERID = "Feri"
-VALID_PASSWORD = "asd"
-
 def validate_credentials():
     """Validate the user ID and password."""
+    global userid_entry, password_entry
     userid = userid_entry.get()
     password = password_entry.get()
 
-    if userid == VALID_USERID and password == VALID_PASSWORD:
-        login_window.destroy()
-        user = Felhasznalo(userid, password)
-        user.betöltés()
-        App(user = user)
+    for user in adat["users"]:
+        if userid == user["Name"] and password == user["password"]:
+            login_window.destroy()
+            user = Felhasznalo(userid, password)
+            user.betöltés()
+            App(user = user)
+            break
     else:
         tk.messagebox.showerror("Login Failed", "Invalid User ID or Password")
+
+def register_user():
+    global userid_entry, password_entry, confirm_password_entry
+    username = userid_entry.get()
+    password = password_entry.get()
+    confirm_password = confirm_password_entry.get()
+
+
+    if password == confirm_password and username != "" and password != "":
+        with open("kaja.json", "r+", encoding='utf-8') as loader:
+            adat["users"].append({"ID": adat["Settings"]["U_ID_counter"],"Name": username, "password": password})
+            adat["Settings"]["U_ID_counter"] += 1
+            json.dump(adat, loader, indent=4, ensure_ascii=False)
+        with open(username + '.txt', 'w', encoding='utf-8'):
+            pass
+        tk.messagebox.showinfo("Registration Successful", "User registered successfully")
+    else:
+        tk.messagebox.showerror("Registration Failed", "Passwords do not match")
 
 # Create the login window
 login_window = ctk.CTk()
 login_window.title("Login")
-login_window.geometry("300x200")
+login_window.geometry("300x300")
 
-# User ID label and entry
-userid_label = tk.Label(login_window, text="User ID:", font=("Arial", 12))
-userid_label.pack(pady=5)
+def login_UI():
+    wigets = login_window.winfo_children()
+    for widget in wigets:
+        widget.destroy()
 
-userid_entry = tk.Entry(login_window, font=("Arial", 12))
-userid_entry.pack(pady=5)
+    global userid_entry, password_entry
+    # User ID label and entry
+    userid_label = tk.Label(login_window, text="Felhasználónév:", font=("Arial", 12))
+    userid_label.pack(pady=5)
 
-# Password label and entry
-password_label = tk.Label(login_window, text="Password:", font=("Arial", 12))
-password_label.pack(pady=5)
+    userid_entry = tk.Entry(login_window, font=("Arial", 12))
+    userid_entry.pack(pady=5)
 
-password_entry = tk.Entry(login_window, font=("Arial", 12), show="*")
-password_entry.pack(pady=5)
+    # Password label and entry
+    password_label = tk.Label(login_window, text="Jelszó:", font=("Arial", 12))
+    password_label.pack(pady=5)
 
-# Login button
-login_button = tk.Button(login_window, text="Login", font=("Arial", 12), command=validate_credentials)
-login_button.pack(pady=20)
+    password_entry = tk.Entry(login_window, font=("Arial", 12), show="*")
+    password_entry.pack(pady=5)
 
-#App()
+    # Frame to hold the buttons
+    button_frame = tk.Frame(login_window, bg=login_window.cget('bg'), highlightthickness=0, bd=0)
+    button_frame.pack(pady=20)
+
+    # Login button
+    login_button = tk.Button(button_frame, text="Login", font=("Arial", 12), command=validate_credentials)
+    login_button.pack(side="left", padx=10)
+
+    # Register button
+    register_button = tk.Button(button_frame, text="Register", font=("Arial", 12), command=register_UI)
+    register_button.pack(side="left", padx=10)
+
+def register_UI():
+    global userid_entry, password_entry, confirm_password_entry
+    wigets = login_window.winfo_children()
+    for widget in wigets:
+        widget.destroy()
+
+    # User ID label and entry
+    userid_label = tk.Label(login_window, text="Felhasználónév:", font=("Arial", 12))
+    userid_label.pack(pady=5)
+
+    userid_entry = tk.Entry(login_window, font=("Arial", 12))
+    userid_entry.pack(pady=5)
+
+    # Password label and entry
+    password_label = tk.Label(login_window, text="Jelszó:", font=("Arial", 12))
+    password_label.pack(pady=5)
+
+    password_entry = tk.Entry(login_window, font=("Arial", 12), show="*")
+    password_entry.pack(pady=5)
+
+    # Password label and entry
+    confirm_password_label = tk.Label(login_window, text="Jelszó megerősítése:", font=("Arial", 12))
+    confirm_password_label.pack(pady=5)
+
+    confirm_password_entry = tk.Entry(login_window, font=("Arial", 12), show="*")
+    confirm_password_entry.pack(pady=5)
+
+    # Frame to hold the buttons
+    button_frame = tk.Frame(login_window, bg=login_window.cget('bg'), highlightthickness=0, bd=0)
+    button_frame.pack(pady=20)
+
+    # Login button
+    back_button = tk.Button(button_frame, text="Back", font=("Arial", 12), command=login_UI)
+    back_button.pack(side="left", padx=10)
+
+    # Register button
+    sign_in_button = tk.Button(button_frame, text="Sign in", font=("Arial", 12), command=register_user)
+    sign_in_button.pack(side="left", padx=10)
+
+login_UI()
 
 # Run the login window
 login_window.mainloop()
