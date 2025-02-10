@@ -1,6 +1,13 @@
 import os
+import json
 
 class Felhasznalo:
+    választható_ételek = []
+    with open("kaja.json", 'r', encoding='utf-8') as json_fajl:
+        data = json.load(json_fajl)
+        for meal in data.get("Meals", []):
+            választható_ételek.append(meal)
+    
     def __init__(self, felhasználó_név, jelszó):
         self.felhasználó_név = felhasználó_név
         self.jelszó = jelszó

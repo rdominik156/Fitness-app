@@ -9,6 +9,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 from felhasználo import Felhasznalo
 from étel import Etel
+from modul import *
 
 days_name_dic = {"Monday" : 0,
                  "Tuesday" : 1,
@@ -28,6 +29,7 @@ with open('kaja.json', "r", newline="") as hami:
 kaja= []
 for nemtom in adat["Meals"]:
       kaja.append(nemtom["Name"])
+print(kaja)
 
 
 ctk.set_appearance_mode("dark")
@@ -39,8 +41,10 @@ class App(ctk.CTk):
         self.title("TheFitnessApp")
         self.geometry("1000x400")        
         self.user = user
-        print(self.user)
-        print(self.user.ételek)
+        #print(self.user)
+        #print(self.user.ételek)
+        self.isTab = 1
+
         # declare Tabview
         self.tab_view = ctk.CTkTabview(self)
         self.tab_view.pack( padx=20, pady=20)
@@ -87,22 +91,71 @@ class App(ctk.CTk):
             self.entryFrame.grid(row=0, column=0, padx=20, pady=10)
 
             #Labels for tab " Add new meal "
-            self.nameLabel = ctk.CTkLabel(master=self.tab3, text="Name: ")
+            self.Meals_Entry_Frame = ctk.CTkFrame(master=self.tab3, border_width=2, height=100, width=250)
+            self.Meals_Entry_Frame.grid(row=0, column=0, padx=10, pady=10)
+
+            self.nameLabel = ctk.CTkLabel(master=self.Meals_Entry_Frame, text="Name: ")
             self.nameLabel.grid(row=0, column=0, padx=20, pady=10)
-            self.calorieLabel = ctk.CTkLabel(master=self.tab3, text="Calories/100: ")
+            self.calorieLabel = ctk.CTkLabel(master=self.Meals_Entry_Frame, text="Calories/100: ")
             self.calorieLabel.grid(row=1, column=0, padx=20, pady=10)
-            self.fatLabel = ctk.CTkLabel(master=self.tab3, text="Fat: ")
+            self.fatLabel = ctk.CTkLabel(master=self.Meals_Entry_Frame, text="Fat: ")
             self.fatLabel.grid(row=2, column=0, padx=20, pady=10)
-            self.carboLabel = ctk.CTkLabel(master=self.tab3, text="Carbohydrate: ")
+            self.carboLabel = ctk.CTkLabel(master=self.Meals_Entry_Frame, text="Carbohydrate: ")
             self.carboLabel.grid(row=3, column=0, padx=20, pady=10)
-            self.ProteinLabel = ctk.CTkLabel(master=self.tab3, text="Protein: ")
+            self.ProteinLabel = ctk.CTkLabel(master=self.Meals_Entry_Frame, text="Protein: ")
             self.ProteinLabel.grid(row=4, column=0, padx=20, pady=10)
-            self.whenLabel = ctk.CTkLabel(master=self.tab3, text="When: ")
-            self.whenLabel.grid(row=0, column=2, padx=20, pady=10)
+            def kereső(root, list): #ha hibás a class késöbb elővenni
+                # Lista az elemekhez
+                def update_list(event):
+                    #Frissíti a listát a beírt keresési feltétel alapján.
+                    search_term = search_var.get().lower()
+                    filtered_data = [item for item in list if search_term in item.lower()]
+
+                    # Töröljük az aktuális listát
+                    listbox.delete(0, "end")
+
+                    # Hozzáadjuk a szűrt elemeket
+                    for item in filtered_data:
+                        listbox.insert("end", item)
+
+                # Keresőmező változó
+                search_var = ctk.StringVar()
+                # Trace changes to the search_var and call update_list on write events
+                search_var.trace_add("write", lambda *args: update_list(None))
+
+                # Keresőmező létrehozása
+                entry = ctk.CTkEntry(root, textvariable=search_var, width=150)
+                entry.pack(pady=10)
+
+                # Listbox a találatok megjelenítésére
+                listbox = CTkListbox(master=root, height=160, border_width=1, scroll_height=100)
+                listbox.pack(pady=10, padx=10, fill="both", expand=False)
+                listbox.bind("<Double-Button-1>", lambda event: Entry_k_visszaírása(listbox.get(listbox.curselection())))
+                listbox.bind("<Return>", lambda event: Entry_k_visszaírása(listbox.get(listbox.curselection())))
+                listbox.bind("<Double-Button-1>", lambda event: self.whatLabel2.configure(text=listbox.get(listbox.curselection())))
+
+                # Kezdő lista feltöltése
+                for item in list:
+                    listbox.insert("end", item)
+            
+            # Kereső 1 +Frame
+            self.kereső_meals = ctk.CTkFrame(master=self.tab3, border_width=2, height=500, width=250)
+            self.kereső_meals.grid(row=0, column=1, padx=20, pady=10)
+            self.k1 = Kereső(self.kereső_meals, kaja)
+            self.k1.listbox.bind("<Double-Button-1>", lambda event: Entry_k_visszaírása(self.k1.get_selected()))
+            
+            # Kereső 2 +Frame
+            self.kereső_calories = ctk.CTkFrame(master=self.tab2, border_width=2, height=500, width=250)
+            self.kereső_calories.grid(row=0, column=1, padx=20, pady=10)
+            self.k2 = Kereső(self.kereső_calories, kaja)
+            self.k2.listbox.bind("<Double-Button-1>", lambda event: self.whatLabel2.configure(text=self.k2.get_selected()))
+
 
             #Labels for tab " Calculate "
             self.whatLabel = ctk.CTkLabel(master=self.entryFrame, text="Meal: ")
             self.whatLabel.grid(row=0, column=0,padx=20, pady=10 )
+            self.whatLabel2 = ctk.CTkLabel(master=self.entryFrame, text="")
+            self.whatLabel2.grid(row=0, column=1,padx=20, pady=10 )
             self.portionLabel = ctk.CTkLabel(master=self.entryFrame, text="Portion: ")
             self.portionLabel.grid(row=1, column=0,padx=20, pady=10 )
             self.allCaloriesLabel = ctk.CTkLabel(master=self.entryFrame, text="All calories: ")
@@ -136,7 +189,7 @@ class App(ctk.CTk):
             self.calendarTreeView.column("fehérje",width=80 ,stretch =True)
 
             self.calculateTreeView = ttk.Treeview(master=self.tab2, height=5, columns=("név","mennyiség", "kalória", "zsír", "szénhidrát", "fehérje"),)
-            self.calculateTreeView.grid(column=1, row=0, padx=10, pady=0)
+            self.calculateTreeView.grid(column=0, row=1, padx=10, pady=0, columnspan=2)
             self.calculateTreeView.column("#0",width=15 ,stretch =False)
             self.calculateTreeView.heading("név", text="Név", anchor="w")
             self.calculateTreeView.column("név",width=150 ,stretch =True)
@@ -159,41 +212,24 @@ class App(ctk.CTk):
                                    showweeknumbers=False,
                                    showothermonthdays=False)
             self.calend.grid(row=1, column=1, padx=20, pady=10)
-
-            #Variables for tab " Add new meal " checkboxes
-            self.checkboxBreakfast = ctk.StringVar()
-            self.checkboxLunch = ctk.StringVar()
-            self.checkboxDinner = ctk.StringVar()
             
             #Entries for tab " Add new meal "
-            self.nameEntry = ctk.CTkEntry(master=self.tab3, textvariable="")
+            self.nameEntry = ctk.CTkEntry(master=self.Meals_Entry_Frame, textvariable="")
             self.nameEntry.grid(row=0, column=1, padx=20, pady=10)
-            self.calorieEntry = ctk.CTkEntry(master=self.tab3)
+            self.calorieEntry = ctk.CTkEntry(master=self.Meals_Entry_Frame)
             self.calorieEntry.grid(row=1, column=1, padx=20, pady=10)
-            self.fatEntry = ctk.CTkEntry(master=self.tab3)
+            self.fatEntry = ctk.CTkEntry(master=self.Meals_Entry_Frame)
             self.fatEntry.grid(row=2, column=1, padx=20, pady=10)
-            self.carboEntry = ctk.CTkEntry(master=self.tab3)
+            self.carboEntry = ctk.CTkEntry(master=self.Meals_Entry_Frame)
             self.carboEntry.grid(row=3, column=1, padx=20, pady=10)
-            self.ProteinEntry = ctk.CTkEntry(master=self.tab3)
+            self.ProteinEntry = ctk.CTkEntry(master=self.Meals_Entry_Frame)
             self.ProteinEntry.grid(row=4, column=1, padx=20, pady=10)
-            self.whenEntryBreakfast = ctk.CTkCheckBox(master=self.tab3, text="Breakfast", variable=self.checkboxBreakfast, onvalue="Breakfast")
-            self.whenEntryBreakfast.grid(row=1, column=2, padx=20, pady=10)
-            self.whenEntryLunch = ctk.CTkCheckBox(master=self.tab3, text="Lunch", variable=self.checkboxLunch, onvalue="Lunch")
-            self.whenEntryLunch.grid(row=2, column=2, padx=20, pady=10)
-            self.whenEntryDinner = ctk.CTkCheckBox(master=self.tab3, text="Dinner", variable=self.checkboxDinner, onvalue="Dinner")
-            self.whenEntryDinner.grid(row=3, column=2, padx=20, pady=10)
 
             #Entries for tab " Calculate "
-            self.combobox = ctk.CTkOptionMenu(master=self.entryFrame, values=kaja, button_color="green")
-            self.combobox.grid(row=0, column=1, padx=20, pady=10)
-            self.combobox.set("")
             self.portionEntry = ctk.CTkEntry(master=self.entryFrame)
             self.portionEntry.grid(row=1, column=1, padx=20, pady=10)
 
-            #Entries for tab " Add new meal "
-            self.comboboxMeal = ctk.CTkComboBox(master=self.tab3, values=kaja, command=Entry_k_visszaírása)
-            self.comboboxMeal.grid(row=6, column=0, padx=20, pady=10)
-            self.comboboxMeal.set("")
+            print(Felhasznalo.választható_ételek[2]["Name"]) # itt kisérletezés folyik, törlendő
 
         def Táblázat(self, adat):
             pass
@@ -213,54 +249,21 @@ class App(ctk.CTk):
                     self.e.insert("end", j)
                 y = 0
 
-        def create_circle_meter(percentage, amount):
-            # Validate the input
-            if not 0 <= percentage <= 100:
-                raise ValueError("Percentage must be between 0 and 100")
-
-            # Create a figure and a single subplot
-            fig, ax = plt.subplots(figsize=(6, 6), subplot_kw=dict(aspect="equal"))
-
-            # Define the size of the wedge for the given percentage
-            size = 0.3
-            vals = np.array([percentage, 100 - percentage])
-
-            # Create a pie chart with the given percentage
-            wedges, texts = ax.pie(vals, wedgeprops=dict(width=size, edgecolor='w'), startangle=90)
-
-            # Set the aspect ratio to be equal
-            ax.set(aspect="equal")
-
-            # Add a circle at the center
-            centre_circle = plt.Circle((0, 0), 0.70, fc='white')
-            fig.gca().add_artist(centre_circle)
-
-            # Annotate the percentage in the center of the circle
-            plt.text(0, 0, f"{percentage:.0f}%", ha='center', va='center', fontsize=24, color='black')
-
-            # Add the amount below the circle
-            plt.text(0, -1.3, f"Amount: {amount}", ha='center', va='center', fontsize=14, color='black')
-
-            # Display the plot
-            plt.show()
-
         def Entry_k_visszaírása(choice):
+            print(choice)
             self.nameEntry.delete(0,"end")
             self.calorieEntry.delete(0,"end")
             self.fatEntry.delete(0,"end")
             self.carboEntry.delete(0,"end")
             self.ProteinEntry.delete(0,"end")
             for i in adat["Meals"]:
-                 if i["Name"] == choice:
+                if i["Name"] == choice and choice != "":
                     self.nameEntry.insert(0,i["Name"])
-                    self.calorieEntry.insert(0,i["Calories/100"])
-                    self.fatEntry.insert(0,i["Fat"])
-                    self.carboEntry.insert(0,i["Carbohydrate"])
-                    self.ProteinEntry.insert(0,i["Protein"])
-                    self.whenEntryBreakfast #késöbb meg kell csinálni!!!!
-                    self.whenEntryLunch
-                    self.whenEntryDinner
-            self.comboboxMeal.set("")
+                    self.calorieEntry.insert(0,i["cal_per_100"])
+                    self.fatEntry.insert(0,i["fat"])
+                    self.carboEntry.insert(0,i["carb"])
+                    self.ProteinEntry.insert(0,i["protein"])
+                    break
 
         All_GUI(self)
 
@@ -319,15 +322,15 @@ class App(ctk.CTk):
 
             #a név és caloria json-hoz adása
         def hozza_adás_calories():
-            Neve = self.combobox.get()
+            Neve = self.k2.get_selected()
             Portion_per_each = int(self.portionEntry.get())
             x = kaja.index(Neve)
 
             # Calories_multiplication kiszámolása
-            cal_mul = (int(adat["Meals"][x]["Calories/100"]) * Portion_per_each) / 100
-            fat_mul = (float(adat["Meals"][x]["Fat"]) * Portion_per_each) / 100
-            carb_mul = (float(adat["Meals"][x]["Carbohydrate"]) * Portion_per_each) / 100
-            prot_mul = (float(adat["Meals"][x]["Protein"]) * Portion_per_each) / 100
+            cal_mul = (int(adat["Meals"][x]["cal_per_100"]) * Portion_per_each) / 100
+            fat_mul = (float(adat["Meals"][x]["fat"]) * Portion_per_each) / 100
+            carb_mul = (float(adat["Meals"][x]["carb"]) * Portion_per_each) / 100
+            prot_mul = (float(adat["Meals"][x]["protein"]) * Portion_per_each) / 100
 
             lista = [Neve, Portion_per_each, cal_mul, fat_mul, carb_mul, prot_mul]
             self.calculateTreeView.insert("",index="end", values=lista)
@@ -377,8 +380,9 @@ class App(ctk.CTk):
         def hozza_adás_Meals():
             uj_etel = Etel( self.nameEntry.get(), self.carboEntry.get(), self.ProteinEntry.get(), self.fatEntry.get(), self.calorieEntry.get())
             uj_etel.write_ID()
-            #uj_etel.write_into_note()
+            uj_etel.write_into_note()
 
+            kaja.append(uj_etel.name)
 
             """ Nev = self.nameEntry.get()
             Kaloria = self.calorieEntry.get()
@@ -434,7 +438,36 @@ class App(ctk.CTk):
                 self.combobox.configure(values=kaja) """
 
         def listabol_torles_Meals():
-            n = 0
+            meal_to_delete = Etel( self.nameEntry.get(), self.carboEntry.get(), self.ProteinEntry.get(), self.fatEntry.get(), self.calorieEntry.get())
+            print(meal_to_delete)
+            print(meal_to_delete.Id)
+            for i in Felhasznalo.választható_ételek:
+                print(i)
+                print(i["ID"])
+                print(id(i))
+                if i["ID"] == meal_to_delete.Id and i["Name"] == meal_to_delete.name and i["cal_per_100"] == meal_to_delete.cal_per_100 and i["fat"] == meal_to_delete.fat and i["carb"] == meal_to_delete.carb and i["protein"] == meal_to_delete.protein:
+                    Felhasznalo.választható_ételek.remove(i) # itt kisérletezés folyik
+                    break
+            adat["Meals"] = Felhasznalo.választható_ételek  
+            with open("kaja.json", "w") as f:
+                json.dump(adat, f, indent=4)
+            #for meal in adat["Meals"]:
+            #    if meal["Name"] == meal_to_delete.name:
+            #        adat["Meals"].remove(meal)
+            #        break
+            #    with open("kaja.json", "w") as f:
+            #        json.dump(adat, f, indent=4)
+                kaja.remove(meal_to_delete.name)
+                #self.comboboxMeal.configure(values=kaja)
+                #self.combobox.configure(values=kaja)
+                self.nameEntry.delete(0,"end")
+                self.calorieEntry.delete(0,"end")
+                self.fatEntry.delete(0,"end")
+                self.carboEntry.delete(0,"end")
+                self.ProteinEntry.delete(0,"end")
+            #else:
+            #    tk.messagebox.showerror("Delete Failed", "Nincs ilyen étel")
+            """  n = 0
             selected_item = self.nameEntry.get()
             if selected_item != "":
                 for i in adat["Meals"]:
@@ -453,7 +486,7 @@ class App(ctk.CTk):
                 self.calorieEntry.delete(0,"end")
                 self.fatEntry.delete(0,"end")
                 self.carboEntry.delete(0,"end")
-                self.ProteinEntry.delete(0,"end")
+                self.ProteinEntry.delete(0,"end") """
 
         def buttons():
         # Buttons
@@ -463,9 +496,9 @@ class App(ctk.CTk):
             self.removeFromListButton.grid(row=3, column=0, padx=20, pady=20)             
     
             self.mealAddToDatabase = ctk.CTkButton(master=self.tab3, text="Add to the database", command=hozza_adás_Meals)
-            self.mealAddToDatabase.grid(row=6, padx=20, pady=10, column=1)
+            self.mealAddToDatabase.grid(row=1, padx=20, pady=10, column=0)
             self.delFromDatabase = ctk.CTkButton(master=self.tab3, text="Delete", command=listabol_torles_Meals,fg_color="#D12727",font=(None,14),hover_color="#811A1A")
-            self.delFromDatabase.grid(row=6, padx=20, pady=10, column=2)
+            self.delFromDatabase.grid(row=1, padx=20, pady=10, column=1)
 
             button_nap = ctk.CTkButton(master=self.calendarFrame, text="nap", width=50, height=25,fg_color="#212121")
             button_nap.grid(row=0, column=0, pady=0)
@@ -479,6 +512,8 @@ class App(ctk.CTk):
         buttons()
 
         self.mainloop()
+
+#---------------------------------------------------------------LOGIN----------------------------------------------------------------------------------------------------------------------------
 
 def validate_credentials():
     """Validate the user ID and password."""
@@ -517,9 +552,10 @@ def register_user():
 # Create the login window
 login_window = ctk.CTk()
 login_window.title("Login")
-login_window.geometry("300x300")
+login_window.geometry("300x200")
 
 def login_UI():
+    login_window.geometry("300x200")
     wigets = login_window.winfo_children()
     for widget in wigets:
         widget.destroy()
@@ -546,12 +582,14 @@ def login_UI():
     # Login button
     login_button = tk.Button(button_frame, text="Login", font=("Arial", 12), command=validate_credentials)
     login_button.pack(side="left", padx=10)
+    login_window.bind('<Return>', lambda event: validate_credentials())
 
     # Register button
     register_button = tk.Button(button_frame, text="Register", font=("Arial", 12), command=register_UI)
     register_button.pack(side="left", padx=10)
 
 def register_UI():
+    login_window.geometry("300x280")
     global userid_entry, password_entry, confirm_password_entry
     wigets = login_window.winfo_children()
     for widget in wigets:
@@ -589,6 +627,8 @@ def register_UI():
     # Register button
     sign_in_button = tk.Button(button_frame, text="Sign in", font=("Arial", 12), command=register_user)
     sign_in_button.pack(side="left", padx=10)
+    login_window.bind('<Return>', lambda event: register_user())
+
 
 login_UI()
 

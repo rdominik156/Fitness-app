@@ -1,7 +1,7 @@
 {
     "Settings": {
         "U_ID_counter": 6,
-        "F_ID_counter": 18
+        "F_ID_counter": 14
     },
     "users": [
         {
@@ -32,143 +32,79 @@
     ],
     "Meals": [
         {
+            "ID": 0,
             "Name": "Rizs",
-            "Calories/100": "345",
-            "Fat": "0.9",
-            "Carbohydrate": "76.5",
-            "Protein": "7",
-            "When": [
-                "lunch",
-                "dinner"
-            ]
+            "cal_per_100": "345",
+            "fat": "0.9",
+            "carb": "76.5",
+            "protein": "7"
         },
         {
+            "ID": 1,
             "Name": "Egg",
-            "Calories/100": "143",
-            "Fat": "10",
-            "Carbohydrate": "1",
-            "Protein": "13",
-            "When": [
-                "breakfast",
-                "lunch",
-                "dinner"
-            ]
+            "cal_per_100": "143",
+            "fat": "10",
+            "carb": "1",
+            "protein": "13"
         },
         {
+            "ID": 2,
             "Name": "Durum Pasta",
-            "Calories/100": "358",
-            "Fat": "1.5",
-            "Carbohydrate": "70",
-            "Protein": "12",
-            "When": [
-                "",
-                "",
-                ""
-            ]
+            "cal_per_100": "358",
+            "fat": "1.5",
+            "carb": "70",
+            "protein": "12"
         },
         {
+            "ID": 3,
             "Name": "Bab konzerv",
-            "Calories/100": "92",
-            "Fat": "1",
-            "Carbohydrate": "13.2",
-            "Protein": "8.2",
-            "When": [
-                "breakfast",
-                "lunch",
-                "dinner"
-            ]
+            "cal_per_100": "92",
+            "fat": "1",
+            "carb": "13.2",
+            "protein": "8.2"
         },
         {
+            "ID": 4,
             "Name": "Sour cream 12%",
-            "Calories/100": "142",
-            "Fat": "12",
-            "Carbohydrate": "4",
-            "Protein": "3.4",
-            "When": [
-                "breakfast",
-                "lunch",
-                "dinner"
-            ]
+            "cal_per_100": "142",
+            "fat": "12",
+            "carb": "4",
+            "protein": "3.4"
         },
         {
+            "ID": 5,
             "Name": "Brown toastbread",
-            "Calories/100": "242",
-            "Fat": "2.6",
-            "Carbohydrate": "43.2",
-            "Protein": "9.6",
-            "When": [
-                "breakfast",
-                "lunch",
-                "dinner"
-            ]
+            "cal_per_100": "242",
+            "fat": "2.6",
+            "carb": "43.2",
+            "protein": "9.6"
         },
         {
+            "ID": 6,
             "Name": "sonka",
-            "Calories/100": "175",
-            "Fat": "36",
-            "Carbohydrate": "20",
-            "Protein": "60.0",
-            "When": "breakfast"
+            "cal_per_100": "175",
+            "fat": "36",
+            "carb": "20",
+            "protein": "60.0"
         },
         {
+            "ID": 7,
             "Name": "kecskesajt",
-            "Calories/100": "600",
-            "Fat": "400",
-            "Carbohydrate": "100",
-            "Protein": "100",
-            "When": [
-                "dinner, breakfast"
-            ]
+            "cal_per_100": "600",
+            "fat": "400",
+            "carb": "100",
+            "protein": "100"
         },
         {
+            "ID": 8,
             "Name": "Paprikas Krumpli",
-            "Calories/100": "460",
-            "Fat": "17",
-            "Carbohydrate": "66",
-            "Protein": "13",
-            "When": [
-                "",
-                "Lunch",
-                ""
-            ]
+            "cal_per_100": "460",
+            "fat": "17",
+            "carb": "66",
+            "protein": "13"
         },
         {
-            "Name": "Eggek",
-            "Calories/100": "143",
-            "Fat": "100",
-            "Carbohydrate": "1",
-            "Protein": "13",
-            "When": [
-                "",
-                "",
-                ""
-            ]
-        },
-        {
-            "Name": "Rizs2",
-            "Calories/100": "345",
-            "Fat": "0.9",
-            "Carbohydrate": "76.5",
-            "Protein": "7",
-            "When": [
-                "",
-                "",
-                ""
-            ]
-        },
-        {
-            "Name": "Egg2",
-            "Calories/100": "143",
-            "Fat": "10",
-            "Carbohydrate": "1",
-            "Protein": "13",
-            "When": [
-                "",
-                "",
-                ""
-            ]
-        },
-        {
+            "ID": 9,
             "Name": "kupi",
             "carb": 45,
             "protein": 75,
@@ -176,12 +112,44 @@
             "cal_per_100": 500
         },
         {
-            "ID": 17,
-            "Name": "kupi",
+            "ID": 10,
+            "Name": "kupi2",
             "cal_per_100": 500,
             "fat": 23,
             "carb": 45,
             "protein": 75
+        },
+        {
+            "ID": 11,
+            "Name": "B\u00e9la",
+            "cal_per_100": "1",
+            "fat": "1",
+            "carb": "1",
+            "protein": "1"
+        },
+        {
+            "ID": 12,
+            "Name": "B\u00e9la3",
+            "cal_per_100": "2",
+            "fat": "2",
+            "carb": "2",
+            "protein": "2"
+        },
+        {
+            "ID": 13,
+            "Name": "B\u00e9la",
+            "cal_per_100": "2",
+            "fat": "2",
+            "carb": "2",
+            "protein": "2"
+        },
+        {
+            "ID": 14,
+            "Name": "B\u00e9la",
+            "cal_per_100": "3",
+            "fat": "3",
+            "carb": "3",
+            "protein": ""
         }
     ],
     "Calories": [
@@ -472,6 +440,42 @@
             "Carbohydrate_multiplication": 53.55,
             "Protein_multiplication": 4.9,
             "datum": "30/12/2024"
+        },
+        {
+            "Neve": "Egg",
+            "Portion/each": 100,
+            "Calories_multiplication": 143.0,
+            "Fat_multiplication": 10.0,
+            "Carbohydrate_multiplication": 1.0,
+            "Protein_multiplication": 13.0,
+            "datum": "09/02/2025"
+        },
+        {
+            "Neve": "Egg",
+            "Portion/each": 200,
+            "Calories_multiplication": 286.0,
+            "Fat_multiplication": 20.0,
+            "Carbohydrate_multiplication": 2.0,
+            "Protein_multiplication": 26.0,
+            "datum": "09/02/2025"
+        },
+        {
+            "Neve": "Durum Pasta",
+            "Portion/each": 200,
+            "Calories_multiplication": 716.0,
+            "Fat_multiplication": 3.0,
+            "Carbohydrate_multiplication": 140.0,
+            "Protein_multiplication": 24.0,
+            "datum": "09/02/2025"
+        },
+        {
+            "Neve": "Bab konzerv",
+            "Portion/each": 150,
+            "Calories_multiplication": 138.0,
+            "Fat_multiplication": 1.5,
+            "Carbohydrate_multiplication": 19.8,
+            "Protein_multiplication": 12.3,
+            "datum": "09/02/2025"
         }
     ],
     "hkacsa": {

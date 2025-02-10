@@ -1,10 +1,10 @@
-# import tkinter as tk
-# from tkinter import *
-# import json
-# import customtkinter as ctk
-# import matplotlib.pyplot as plt
-# import numpy as np
-
+from tkinter import *
+import json
+import json
+import customtkinter as ctk
+import matplotlib.pyplot as plt
+import numpy as np
+from tkinter import ttk
 
 
 # with open('kaja.json', "r", newline="") as hami:
@@ -98,7 +98,7 @@
 # amount = 150
 # create_circle_meter(percentage, amount)
 
-import customtkinter as ctk
+""" import customtkinter as ctk
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 import matplotlib.pyplot as plt
 import numpy as np
@@ -111,7 +111,7 @@ conn = mysql.connector.connect(
     database="test"
 )
 mycursor = conn.cursor()
-mycursor.execute("CREATE DATABASE test")
+mycursor.execute("CREATE DATABASE test") """
 
 
 
@@ -179,8 +179,49 @@ def program():
     except ValueError:
         print("Value not found in the list")
 
-if __name__ == "__main__":
-    #app = CircleMeterApp()
-    #app.mainloop()
-    #program()
-    pass
+def event_handler():
+    import tkinter as tk
+    from tkinter import ttk
+    from tkinter import ttk
+    # Lista az elemekhez
+    data = ["alma", "banán", "cseresznye", "datolya", "eper", "füge", "gránátalma"]
+
+    def update_list(event):
+        """Frissíti a listát a beírt keresési feltétel alapján."""
+        search_term = search_var.get().lower()
+        filtered_data = [item for item in data if search_term in item.lower()]
+
+        # Töröljük az aktuális listát
+        listbox.delete(0, tk.END)
+
+        # Hozzáadjuk a szűrt elemeket
+        for item in filtered_data:
+            listbox.insert(tk.END, item)
+
+        # Alap ablak létrehozása
+    root = tk.Tk()
+    root.title("Egyszerű Kereső")
+
+    # Keresőmező változó
+    search_var = tk.StringVar()
+    # Trace changes to the search_var and call update_list on write events
+    search_var.trace_add("write", lambda *args: update_list(None))
+
+    # Keresőmező létrehozása
+    entry = ttk.Entry(root, textvariable=search_var, width=30)
+    entry.pack(pady=10)
+
+    # Listbox a találatok megjelenítésére
+    listbox = tk.Listbox(root, width=30, height=10)
+    listbox.pack()
+
+    # Kezdő lista feltöltése
+    for item in data:
+        listbox.insert(tk.END, item)
+
+    # Ablak indítása
+    root.mainloop()
+
+__name__ == "__main__"
+# program()
+event_handler()
