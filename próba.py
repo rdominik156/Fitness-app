@@ -224,4 +224,66 @@ def event_handler():
 
 __name__ == "__main__"
 # program()
-event_handler()
+#event_handler()
+import tkinter as tk
+from tkinter import messagebox
+
+# Sample class for listbox elements
+class Item:
+    def __init__(self, name, value, hidden_id):
+        self.name = name
+        self.value = value
+        self.hidden_id = hidden_id  # Hidden attribute
+    
+    def __str__(self):
+        return f"{self.name} ({self.value})"
+
+# Function to handle item selection
+def on_select(event):
+    widget = event.widget
+    selection_index = widget.curselection()
+    if selection_index:
+        index = selection_index[0]
+        selected_item = displayed_items[index]  # Use displayed_items instead of items
+        messagebox.showinfo("Item Selected", f"You selected: {selected_item.name}\nValue: {selected_item.value}")
+
+# Function to search/filter data
+def filter_list(search_text):
+    global displayed_items
+    listbox.delete(0, tk.END)  # Clear current listbox
+    displayed_items = [item for item in items if search_text.lower() in item.name.lower()]  # Filter items
+    for item in displayed_items:
+        listbox.insert(tk.END, str(item))  # Update listbox with filtered results
+
+# Create the main application window
+root = tk.Tk()
+root.title("Clickable Listbox with Filtering")
+
+# Sample data
+items = [
+    Item("Apple", 100, "A001"),
+    Item("Banana", 200, "A002"),
+    Item("Cherry", 300, "A003"),
+    Item("Date", 400, "A004")
+]
+
+displayed_items = items.copy()  # Initially, all items are displayed
+
+# Create Entry for filtering
+search_entry = tk.Entry(root)
+search_entry.pack(pady=5)
+search_entry.bind("<KeyRelease>", lambda event: filter_list(search_entry.get()))  # Live search
+
+# Create Listbox
+listbox = tk.Listbox(root, height=10)
+listbox.pack(pady=20, padx=20)
+
+# Insert items into the Listbox initially
+for item in displayed_items:
+    listbox.insert(tk.END, str(item))
+
+# Bind selection event
+listbox.bind("<<ListboxSelect>>", on_select)
+
+# Run the application
+root.mainloop()

@@ -10,6 +10,14 @@ import numpy as np
 from felhasználo import Felhasznalo
 from étel import Etel
 from modul import *
+import sqlite3
+
+connection = sqlite3.connect("database.db")
+cursor = connection.cursor()
+
+tabla_adat = ["Domi"]
+#cursor.execute("INSERT INTO 'Kaja' ('Name') VALUES (?)", tabla_adat)
+#connection.commit()
 
 days_name_dic = {"Monday" : 0,
                  "Tuesday" : 1,
@@ -22,28 +30,30 @@ days_name_dic = {"Monday" : 0,
 datum = datetime.today().strftime("%d/%m/%Y")
 
 # adat = json-ból az össze adat!
-with open('kaja.json', "r", newline="") as hami:
-                adat = json.load(hami)
+#with open('kaja.json', "r", newline="") as hami:
+#                adat = json.load(hami)#
 
 # Meals-ből csak a nevek!
-kaja= []
-for nemtom in adat["Meals"]:
-      kaja.append(nemtom["Name"])
-print(kaja)
+#kaja= []
+#for nemtom in adat["Meals"]:
+#      kaja.append(nemtom["Name"])
 
 
 ctk.set_appearance_mode("dark")
-ctk.set_default_color_theme("dark-blue")    
+ctk.set_default_color_theme("dark-blue")
 
 class App(ctk.CTk):
+
+    # adat = json-ból az össze adat!
+    with open('kaja.json', "r", newline="") as hami:
+        adat = json.load(hami)
+
     def __init__(self, user,**kwargs):
         super().__init__( **kwargs)
         self.title("TheFitnessApp")
         self.geometry("1000x400")        
         self.user = user
-        #print(self.user)
-        #print(self.user.ételek)
-        self.isTab = 1
+        self.user.betöltés()
 
         # declare Tabview
         self.tab_view = ctk.CTkTabview(self)
@@ -141,13 +151,12 @@ class App(ctk.CTk):
             # Kereső 1 +Frame
             self.kereső_meals = ctk.CTkFrame(master=self.tab3, border_width=2, height=500, width=250)
             self.kereső_meals.grid(row=0, column=1, padx=20, pady=10)
-            self.k1 = Kereső(self.kereső_meals, kaja)
-            self.k1.listbox.bind("<Double-Button-1>", lambda event: Entry_k_visszaírása(self.k1.get_selected()))
-            
-            # Kereső 2 +Frame
+            self.k1 = Kereső(self.kereső_meals)
+            self.k1.listbox.bind("<<ListboxSelect>>", Entry_k_visszaírása)
+
             self.kereső_calories = ctk.CTkFrame(master=self.tab2, border_width=2, height=500, width=250)
             self.kereső_calories.grid(row=0, column=1, padx=20, pady=10)
-            self.k2 = Kereső(self.kereső_calories, kaja)
+            self.k2 = Kereső(self.kereső_calories)
             self.k2.listbox.bind("<Double-Button-1>", lambda event: self.whatLabel2.configure(text=self.k2.get_selected()))
 
 
@@ -229,8 +238,6 @@ class App(ctk.CTk):
             self.portionEntry = ctk.CTkEntry(master=self.entryFrame)
             self.portionEntry.grid(row=1, column=1, padx=20, pady=10)
 
-            print(Felhasznalo.választható_ételek[2]["Name"]) # itt kisérletezés folyik, törlendő
-
         def Táblázat(self, adat):
             pass
             x = 0
@@ -249,21 +256,30 @@ class App(ctk.CTk):
                     self.e.insert("end", j)
                 y = 0
 
-        def Entry_k_visszaírása(choice):
-            print(choice)
-            self.nameEntry.delete(0,"end")
-            self.calorieEntry.delete(0,"end")
-            self.fatEntry.delete(0,"end")
-            self.carboEntry.delete(0,"end")
-            self.ProteinEntry.delete(0,"end")
-            for i in adat["Meals"]:
-                if i["Name"] == choice and choice != "":
-                    self.nameEntry.insert(0,i["Name"])
-                    self.calorieEntry.insert(0,i["cal_per_100"])
-                    self.fatEntry.insert(0,i["fat"])
-                    self.carboEntry.insert(0,i["carb"])
-                    self.ProteinEntry.insert(0,i["protein"])
-                    break
+        def Entry_k_visszaírása(event):
+            # Get the Etel object from k1 using the index
+            etel_obj_id = self.k1.get_selected()  # Assuming Kereső keeps Etel objects in self.items
+
+            # Fetch meal details from the database
+            cursor.execute(
+                "SELECT Name, cal_per_100, fat, carb, protein FROM Kaja_obj WHERE obj_id = ?", (etel_obj_id,))
+            result = cursor.fetchone()
+
+            if result:
+                name, cal_per_100, fat, carb, protein = result
+
+                self.nameEntry.delete(0, "end")
+                self.calorieEntry.delete(0, "end")
+                self.fatEntry.delete(0, "end")
+                self.carboEntry.delete(0, "end")
+                self.ProteinEntry.delete(0, "end")
+
+                self.nameEntry.insert(0, name)
+                self.calorieEntry.insert(0, cal_per_100)
+                self.fatEntry.insert(0, fat)
+                self.carboEntry.insert(0, carb)
+                self.ProteinEntry.insert(0, protein)
+
 
         All_GUI(self)
 
@@ -282,7 +298,7 @@ class App(ctk.CTk):
                 self.calendarTreeView.delete(item)
 
             curent_data = self.calend.get_date()
-            for i in adat["Calories"]:
+            for i in App.adat["Calories"]:
                 if i["datum"] == curent_data:
 
                     tápöl = (i["Neve"], i["Portion/each"], i["Calories_multiplication"], i["Fat_multiplication"], i["Carbohydrate_multiplication"], i["Protein_multiplication"])
@@ -298,7 +314,7 @@ class App(ctk.CTk):
 
         def color_calendar_dates(calendar):
 
-            for datumok in adat["Calories"]:
+            for datumok in App.adat["Calories"]:
                 day = datumok["datum"]
                 date_obj = datetime.strptime(day, '%d/%m/%Y').date()
                 calendar.calevent_create(date_obj, 'highlight', 'highlight')
@@ -309,7 +325,7 @@ class App(ctk.CTk):
         # variable of display all kcal
             self.inClassSum = 0
 
-            for i in adat["Calories"]:
+            for i in App.adat["Calories"]:
                 if i["datum"] == datum:
                     tápöl = (i["Neve"], i["Portion/each"], i["Calories_multiplication"], i["Fat_multiplication"], i["Carbohydrate_multiplication"], i["Protein_multiplication"])
                     #for táp in tápöl:
@@ -324,13 +340,13 @@ class App(ctk.CTk):
         def hozza_adás_calories():
             Neve = self.k2.get_selected()
             Portion_per_each = int(self.portionEntry.get())
-            x = kaja.index(Neve)
+            x = next((index for (index, d) in enumerate(App.adat["Meals"]) if d["Name"] == Neve), None)
 
             # Calories_multiplication kiszámolása
-            cal_mul = (int(adat["Meals"][x]["cal_per_100"]) * Portion_per_each) / 100
-            fat_mul = (float(adat["Meals"][x]["fat"]) * Portion_per_each) / 100
-            carb_mul = (float(adat["Meals"][x]["carb"]) * Portion_per_each) / 100
-            prot_mul = (float(adat["Meals"][x]["protein"]) * Portion_per_each) / 100
+            cal_mul = (int(App.adat["Meals"][x]["cal_per_100"]) * Portion_per_each) / 100
+            fat_mul = (float(App.adat["Meals"][x]["fat"]) * Portion_per_each) / 100
+            carb_mul = (float(App.adat["Meals"][x]["carb"]) * Portion_per_each) / 100
+            prot_mul = (float(App.adat["Meals"][x]["protein"]) * Portion_per_each) / 100
 
             lista = [Neve, Portion_per_each, cal_mul, fat_mul, carb_mul, prot_mul]
             self.calculateTreeView.insert("",index="end", values=lista)
@@ -349,8 +365,8 @@ class App(ctk.CTk):
             
             # add to json
             with open("kaja.json", "r+") as loader:
-                adat["Calories"].append(caloria_adatok)
-                json.dump(adat, loader, indent=4)
+                App.adat["Calories"].append(caloria_adatok)
+                json.dump(App.adat, loader, indent=4)
             # modify all kcal
             self.inClassSum += cal_mul
             self.allCaloriesCalculated.configure(text=f"{self.inClassSum}   Kcal")
@@ -365,128 +381,53 @@ class App(ctk.CTk):
                 self.inClassSum -= float(item["values"][2])
                 self.allCaloriesCalculated.configure(text=f"{self.inClassSum}   Kcal")
                 self.calculateTreeView.delete(s_item)
-                for i in adat["Calories"]:
+                for i in App.adat["Calories"]:
                     if datum == i["datum"]:
                         break
                     else:
                         n+=1
             
             if selected_item != 0:
-                del adat["Calories"][n+selected_item-1]
+                del App.adat["Calories"][n+selected_item-1]
                 with open("kaja.json", "w") as f:
-                    json.dump(adat, f, indent=4)    
+                    json.dump(App.adat, f, indent=4)    
 
 
         def hozza_adás_Meals():
-            uj_etel = Etel( self.nameEntry.get(), self.carboEntry.get(), self.ProteinEntry.get(), self.fatEntry.get(), self.calorieEntry.get())
+            # Étel objektum létrehozása --> db fileba írás
+            uj_etel = Etel( self.nameEntry.get(),  self.calorieEntry.get(), self.fatEntry.get(),self.carboEntry.get(), self.ProteinEntry.get())
             uj_etel.write_ID()
-            uj_etel.write_into_note()
 
-            kaja.append(uj_etel.name)
+            cursor.execute("SELECT obj_id FROM Kaja_obj WHERE obj_id = ?", (uj_etel.Id,))
+            print(cursor.fetchone())
 
-            """ Nev = self.nameEntry.get()
-            Kaloria = self.calorieEntry.get()
-            zsir = self.fatEntry.get()
-            szenhidrat = self.carboEntry.get()
-            feherje = self.ProteinEntry.get()              
-            etkezes = [self.checkboxBreakfast.get(), self.checkboxLunch.get(), self.checkboxDinner.get()]
-
-            # megnézem hogy van e üres érték -> ha van "0" értéket ad
-            x = [Nev, Kaloria, zsir, szenhidrat, feherje]
-            for i in x:
-                if i != "":
-                    continue
-                else:
-                    x[x.index(i)] = "0"
-
-            # adat tömb
-            adatok = {
-                "Name": x[0],
-                "Calories/100": x[1], 
-                "Fat": x[2],
-                "Carbohydrate": x[3],
-                "Protein": x[4],
-                "When": etkezes
-            }
-
-            # megnézem hogy van e már ez az étel json-ban -->
-            van_már_ilyen = 0
-            számláló = 0
-            for j in kaja:
-                if Nev == j:
-                    van_már_ilyen = 1
-                    break
-                else:
-                    számláló += 1
-
-            # ha VAN ez fut le -> rámenti az újat a régire
-            if van_már_ilyen == 1:
-                with open("kaja.json", "w") as f:
-                    adat["Meals"].pop(számláló)
-                    adat["Meals"].insert(számláló,adatok)
-                    json.dump(adat, f, indent=4)
-                self.comboboxMeal.configure(values=kaja)
-                self.combobox.configure(values=kaja)
-
-            # ha NINCS ez fut le
+            if cursor.fetchone() is None:
+                uj_etel.insert_into_db()
+                self.k1.insert(uj_etel)
+                self.k2.insert(uj_etel)
             else:
-                with open("kaja.json", "r+") as loader:
-                    adat["Meals"].append(adatok)
-                    json.dump(adat, loader, indent=4)
-                kaja.append(adatok["Name"])
-                self.comboboxMeal.configure(values=kaja)
-                self.combobox.configure(values=kaja) """
+                uj_etel.insert_into_db()
+            
+            connection.commit()
 
         def listabol_torles_Meals():
-            meal_to_delete = Etel( self.nameEntry.get(), self.carboEntry.get(), self.ProteinEntry.get(), self.fatEntry.get(), self.calorieEntry.get())
-            print(meal_to_delete)
-            print(meal_to_delete.Id)
-            for i in Felhasznalo.választható_ételek:
-                print(i)
-                print(i["ID"])
-                print(id(i))
-                if i["ID"] == meal_to_delete.Id and i["Name"] == meal_to_delete.name and i["cal_per_100"] == meal_to_delete.cal_per_100 and i["fat"] == meal_to_delete.fat and i["carb"] == meal_to_delete.carb and i["protein"] == meal_to_delete.protein:
-                    Felhasznalo.választható_ételek.remove(i) # itt kisérletezés folyik
-                    break
-            adat["Meals"] = Felhasznalo.választható_ételek  
-            with open("kaja.json", "w") as f:
-                json.dump(adat, f, indent=4)
-            #for meal in adat["Meals"]:
-            #    if meal["Name"] == meal_to_delete.name:
-            #        adat["Meals"].remove(meal)
-            #        break
-            #    with open("kaja.json", "w") as f:
-            #        json.dump(adat, f, indent=4)
-                kaja.remove(meal_to_delete.name)
-                #self.comboboxMeal.configure(values=kaja)
-                #self.combobox.configure(values=kaja)
+            if self.nameEntry.get() != "":
+                meal_to_delete = Etel( self.nameEntry.get(), self.carboEntry.get(), self.ProteinEntry.get(), self.fatEntry.get(), self.calorieEntry.get())
+                cursor.execute("SELECT obj_id FROM Kaja_obj WHERE Name = ? AND cal_per_100 = ? AND fat = ? AND carb = ? AND protein = ?", 
+                               (meal_to_delete.name, meal_to_delete.cal_per_100, meal_to_delete.fat, meal_to_delete.carb, meal_to_delete.protein))
+                meal_to_delete_index = cursor.fetchone()
+
+                listbox_index_to_delete = self.k1.listbox.curselection()
+                self.k1.remove(listbox_index_to_delete)
+                self.k2.remove(listbox_index_to_delete)
+                meal_to_delete.Id = meal_to_delete_index
+                meal_to_delete.delete_from_db()
+
                 self.nameEntry.delete(0,"end")
                 self.calorieEntry.delete(0,"end")
                 self.fatEntry.delete(0,"end")
                 self.carboEntry.delete(0,"end")
                 self.ProteinEntry.delete(0,"end")
-            #else:
-            #    tk.messagebox.showerror("Delete Failed", "Nincs ilyen étel")
-            """  n = 0
-            selected_item = self.nameEntry.get()
-            if selected_item != "":
-                for i in adat["Meals"]:
-                    if i["Name"] == self.nameEntry.get():
-                        break
-                    
-                    else:
-                        n+=1
-            
-                del adat["Meals"][n]
-                with open("kaja.json", "w") as f:
-                    json.dump(adat, f, indent=4)
-                kaja.pop(n)
-                self.comboboxMeal.configure(values=kaja)
-                self.nameEntry.delete(0,"end")
-                self.calorieEntry.delete(0,"end")
-                self.fatEntry.delete(0,"end")
-                self.carboEntry.delete(0,"end")
-                self.ProteinEntry.delete(0,"end") """
 
         def buttons():
         # Buttons
@@ -521,13 +462,21 @@ def validate_credentials():
     userid = userid_entry.get()
     password = password_entry.get()
 
-    for user in adat["users"]:
-        if userid == user["Name"] and password == user["password"]:
-            login_window.destroy()
-            user = Felhasznalo(userid, password)
-            user.betöltés()
-            App(user = user)
-            break
+    #for user in App.adat["users"]:
+    cursor.execute("SELECT * FROM 'Felhasználó' WHERE Name = ? AND Password = ?", (userid, password))
+    result = cursor.fetchone()
+    if result:
+        login_window.destroy()
+        user = Felhasznalo(userid, password)
+        user.betöltés()
+        App(user = user)
+
+        #if userid == user["Name"] and password == user["password"]:
+        #    login_window.destroy()
+        #    user = Felhasznalo(userid, password)
+        #    user.betöltés()
+        #    App(user = user)
+        #    break
     else:
         tk.messagebox.showerror("Login Failed", "Invalid User ID or Password")
 
@@ -539,12 +488,14 @@ def register_user():
 
 
     if password == confirm_password and username != "" and password != "":
-        with open("kaja.json", "r+", encoding='utf-8') as loader:
-            adat["users"].append({"ID": adat["Settings"]["U_ID_counter"],"Name": username, "password": password})
-            adat["Settings"]["U_ID_counter"] += 1
-            json.dump(adat, loader, indent=4, ensure_ascii=False)
-        with open(username + '.txt', 'w', encoding='utf-8'):
-            pass
+        cursor.execute("INSERT INTO 'Felhasználó' ('Name', 'Password') VALUES (?, ?)", (username, password))
+        connection.commit()
+        #with open("kaja.json", "r+", encoding='utf-8') as loader:
+        #    App.adat["users"].append({"ID": App.adat["Settings"]["U_ID_counter"],"Name": username, "password": password})
+        #    App.adat["Settings"]["U_ID_counter"] += 1
+        #    json.dump(App.adat, loader, indent=4, ensure_ascii=False)
+        #with open(username + '.txt', 'w', encoding='utf-8'):
+        #    pass
         tk.messagebox.showinfo("Registration Successful", "User registered successfully")
     else:
         tk.messagebox.showerror("Registration Failed", "Passwords do not match")
@@ -638,3 +589,5 @@ login_window.mainloop()
 
 #to do
 # a naptárnál ha hozzáadok egy új értéket a naphot nem változik meg azonnal a szín
+
+# 0id-s felhasználó aki hozzá fér az összes adathoz

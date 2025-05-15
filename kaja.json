@@ -1,7 +1,7 @@
 {
     "Settings": {
-        "U_ID_counter": 6,
-        "F_ID_counter": 14
+        "U_ID_counter": 7,
+        "F_ID_counter": 106
     },
     "users": [
         {
@@ -16,18 +16,23 @@
         },
         {
             "ID": 3,
-            "Name": "B\u0102\u00a9la",
+            "Name": "B\u00c4\u201a\u00c2\u00a9la",
             "password": "dsa"
         },
         {
             "ID": 4,
-            "Name": "B\u0102\u00a9la",
+            "Name": "B\u00c4\u201a\u00c2\u00a9la",
             "password": "ert"
         },
         {
             "ID": 5,
-            "Name": "B\u0102\u00a9la",
+            "Name": "B\u00c4\u201a\u00c2\u00a9la",
             "password": "ghj"
+        },
+        {
+            "ID": 6,
+            "Name": "Bal\u0102\u02c7zs",
+            "password": "htp"
         }
     ],
     "Meals": [
@@ -121,35 +126,43 @@
         },
         {
             "ID": 11,
-            "Name": "B\u00e9la",
-            "cal_per_100": "1",
-            "fat": "1",
-            "carb": "1",
-            "protein": "1"
-        },
-        {
-            "ID": 12,
-            "Name": "B\u00e9la3",
+            "Name": "B\u0102\u00a9la",
             "cal_per_100": "2",
             "fat": "2",
             "carb": "2",
             "protein": "2"
         },
         {
-            "ID": 13,
-            "Name": "B\u00e9la",
+            "ID": 24,
+            "Name": "B\u0102\u00a9la2",
             "cal_per_100": "2",
             "fat": "2",
             "carb": "2",
             "protein": "2"
         },
         {
-            "ID": 14,
-            "Name": "B\u00e9la",
+            "ID": 25,
+            "Name": "B\u0102\u00a9la3",
             "cal_per_100": "3",
             "fat": "3",
             "carb": "3",
-            "protein": ""
+            "protein": "3"
+        },
+        {
+            "ID": 40,
+            "Name": "sonka2",
+            "cal_per_100": "1752",
+            "fat": "36",
+            "carb": "20",
+            "protein": "60.0"
+        },
+        {
+            "ID": 41,
+            "Name": "Egg2",
+            "cal_per_100": "143",
+            "fat": "10",
+            "carb": "1",
+            "protein": "13"
         }
     ],
     "Calories": [
@@ -476,6 +489,33 @@
             "Carbohydrate_multiplication": 19.8,
             "Protein_multiplication": 12.3,
             "datum": "09/02/2025"
+        },
+        {
+            "Neve": "Durum Pasta",
+            "Portion/each": 100,
+            "Calories_multiplication": 358.0,
+            "Fat_multiplication": 1.5,
+            "Carbohydrate_multiplication": 70.0,
+            "Protein_multiplication": 12.0,
+            "datum": "14/02/2025"
+        },
+        {
+            "Neve": "Durum Pasta",
+            "Portion/each": 100,
+            "Calories_multiplication": 358.0,
+            "Fat_multiplication": 1.5,
+            "Carbohydrate_multiplication": 70.0,
+            "Protein_multiplication": 12.0,
+            "datum": "01/05/2025"
+        },
+        {
+            "Neve": "Egg",
+            "Portion/each": 80,
+            "Calories_multiplication": 114.4,
+            "Fat_multiplication": 8.0,
+            "Carbohydrate_multiplication": 0.8,
+            "Protein_multiplication": 10.4,
+            "datum": "02/05/2025"
         }
     ],
     "hkacsa": {

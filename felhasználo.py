@@ -1,5 +1,9 @@
 import os
 import json
+import sqlite3
+
+connection = sqlite3.connect("database.db")
+cursor = connection.cursor()
 
 class Felhasznalo:
     választható_ételek = []
@@ -14,19 +18,26 @@ class Felhasznalo:
         self.ételek = []
 
     def hozzáadás_ételekhez(self, étel:list):
-        #print(étel)
-        self.ételek.append(étel)
-        with open(self.felhasználó_név + ".txt", 'a', encoding='utf-8') as fajl:
-            fajl.write("; ".join(map(str, étel))+ "\n")
+        cursor.execute("SELECT user_id FROM Felhasználó WHERE Name = ?", (self.felhasználó_név,))
+        user_id = cursor.fetchone()[0]
+
+        cursor.execute("INSERT INTO kaja_stored (user_id, name, portion, cal_mul, fat_mul, carb_mul, prot_mul, datum) VALUES (?, ?, ?, ?, ?, ?, ?, ?)", 
+                   (user_id, étel[0], étel[1], étel[2], étel[3], étel[4], étel[5], étel[6]))
+        connection.commit()
 
     def betöltés(self):
         """
         Betölti a felhasználó ételeit a fájlból és hozzáadja azokat az ételek listához.
         A fájl neve a felhasználó nevéből származik és .txt kiterjesztésű.
         """
-        with open(self.felhasználó_név + '.txt', 'r', encoding='utf-8') as tartalom:
-            for i in tartalom.readlines():
-                self.ételek.append(i.strip().split(";"))
+
+        cursor.execute("SELECT kaja_stored.name ,portion,cal_mul,fat_mul,carb_mul,prot_mul,datum FROM kaja_stored JOIN Felhasználó on kaja_stored.user_id = Felhasználó.user_id WHERE Felhasználó.Name = ?", (self.felhasználó_név,))
+        rows = cursor.fetchall()
+
+        for row in rows:
+            print(row)
+            self.ételek.append(list(row))
+
 
     def __repr__(self):
         return f"felhasználó: {self.felhasználó_név}"
