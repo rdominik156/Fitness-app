@@ -12,8 +12,6 @@ from étel import Etel
 from modul import *
 import sqlite3
 
-connection = sqlite3.connect("database.db")
-cursor = connection.cursor()
 
 tabla_adat = ["Domi"]
 #cursor.execute("INSERT INTO 'Kaja' ('Name') VALUES (?)", tabla_adat)
@@ -251,6 +249,8 @@ class App(ctk.CTk):
             etel_obj_id = self.k1.get_selected()  # Assuming Kereső keeps Etel objects in self.items
 
             # Fetch meal details from the database
+            connection = sqlite3.connect("database.db")
+            cursor = connection.cursor()
             cursor.execute(
                 "SELECT Name, cal_per_100, fat, carb, protein FROM Kaja_obj WHERE obj_id = ?", (etel_obj_id,))
             result = cursor.fetchone()
@@ -269,6 +269,7 @@ class App(ctk.CTk):
                 self.fatEntry.insert(0, fat)
                 self.carboEntry.insert(0, carb)
                 self.ProteinEntry.insert(0, protein)
+            connection.close()
 
 
         All_GUI(self)
@@ -385,22 +386,23 @@ class App(ctk.CTk):
 
         def hozza_adás_Meals():
             # Étel objektum létrehozása --> db fileba írás
-            uj_etel = Etel( self.nameEntry.get(),  self.calorieEntry.get(), self.fatEntry.get(),self.carboEntry.get(), self.ProteinEntry.get())
-            uj_etel.write_ID()
-
+            uj_etel = Etel(self.nameEntry.get(),  self.calorieEntry.get(), self.fatEntry.get(),self.carboEntry.get(), self.ProteinEntry.get())
+            connection = sqlite3.connect("database.db")
+            cursor = connection.cursor()
             cursor.execute("SELECT obj_id FROM Kaja_obj WHERE obj_id = ?", (uj_etel.Id,))
-            #print(cursor.fetchone())
-
+            
             if cursor.fetchone() is None:
-                uj_etel.insert_into_db()
+                uj_etel.insert_into_db(cursor)
                 self.k1.insert(uj_etel)
                 self.k2.insert(uj_etel)
             else:
-                uj_etel.insert_into_db()
-            
+                uj_etel.insert_into_db(cursor)
             connection.commit()
+            connection.close()
 
         def listabol_torles_Meals():
+            connection = sqlite3.connect("database.db")
+            cursor = connection.cursor()
             if self.nameEntry.get() != "":
                 meal_to_delete = Etel( self.nameEntry.get(), self.carboEntry.get(), self.ProteinEntry.get(), self.fatEntry.get(), self.calorieEntry.get())
                 cursor.execute("SELECT obj_id FROM Kaja_obj WHERE Name = ? AND cal_per_100 = ? AND fat = ? AND carb = ? AND protein = ?", 
@@ -418,6 +420,8 @@ class App(ctk.CTk):
                 self.fatEntry.delete(0,"end")
                 self.carboEntry.delete(0,"end")
                 self.ProteinEntry.delete(0,"end")
+            connection.commit()
+            connection.close()
 
         def buttons():
         # Buttons
@@ -448,6 +452,8 @@ class App(ctk.CTk):
 
 def validate_credentials():
     """Validate the user ID and password."""
+    connection = sqlite3.connect("database.db")
+    cursor = connection.cursor()
     global userid_entry, password_entry
     userid = userid_entry.get()
     password = password_entry.get()
@@ -461,8 +467,11 @@ def validate_credentials():
         App(user = user)
     else:
         tk.messagebox.showerror("Login Failed", "Invalid User ID or Password")
+    connection.close()
 
 def register_user():
+    connection = sqlite3.connect("database.db")
+    cursor = connection.cursor()
     global userid_entry, password_entry, confirm_password_entry
     username = userid_entry.get()
     password = password_entry.get()
@@ -476,6 +485,7 @@ def register_user():
         tk.messagebox.showinfo("Registration Successful", "User registered successfully")
     else:
         tk.messagebox.showerror("Registration Failed", "Passwords do not match")
+    connection.close()
 
 # Create the login window
 login_window = ctk.CTk()

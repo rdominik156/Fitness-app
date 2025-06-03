@@ -5,54 +5,25 @@ from tkinter import messagebox
 
 
 class Etel:
-    """.write_ID( ) -> metódus a json fileba írja az ételek ID-jét \n
-    .write_into_note( ) -> metódus a json fileba írja az ételeket\n
-    .get_ID_by_name( ) -> metódus visszaadja az ételek ID-jét név alapján"""
-    # az "adat" változóba kiszedem az össze json recordot
-    with open('kaja.json', "r") as x:
-        adat:list = json.load(x)
-
-    counter = adat["Settings"]["F_ID_counter"]
-
-    def __init__(self, name, cal_per_100, fat, carb, protein, Id = None):
+    def __init__(self, name, cal_per_100, fat, carb, protein, Id=None):
         self.name:str = name
-        self.Id = Id if Id is not None else Etel.counter
+        self.Id:int = Id
         self.carb:int = carb
         self.protein:int = protein
         self.fat:int = fat
         self.cal_per_100:float = cal_per_100
 
-    #
-    def write_ID(self):
-        connection = sqlite3.connect("database.db", timeout=10)
-        cursor = connection.cursor()
-        #print(self.name)
-        cursor.execute("SELECT obj_id,Name FROM Kaja_obj WHERE Name = ?",(self.name,),)
-        result = cursor.fetchone()
-
-        if result is not None:
-            # If the meal already exists
-            self.Id = result[0]  # Get the existing ID
-            #print(self.Id)
-        else:
-            Etel.adat["Settings"]["F_ID_counter"] += 1
-            Etel.counter += 1
-            with open("kaja.json", "w") as file:
-                json.dump(Etel.adat, file, indent=4)
-        # Commit will be done at the end of the method
-        connection.commit()
-        connection.close()
-
-    def insert_into_db(self):
+    def insert_into_db(self, cursor):
         # Check if the meal already exists in the database
-        connection = sqlite3.connect("database.db", timeout=20)
-        cursor = connection.cursor()
+        #connection = sqlite3.connect("database.db", timeout=10)
+        #cursor = connection.cursor()
         cursor.execute("SELECT * FROM Kaja_obj WHERE Name = ?", (self.name,),)
         result = cursor.fetchone()
 
         if result is None:
             # If the meal does not exist, insert it
-            cursor.execute("INSERT OR REPLACE INTO Kaja_obj (obj_id, Name, cal_per_100, fat, carb, protein) VALUES (?, ?, ?, ?, ?, ?)", (self.Id, self.name, self.cal_per_100, self.fat, self.carb, self.protein,),)
+            cursor.execute("INSERT INTO Kaja_obj (Name, cal_per_100, fat, carb, protein) VALUES (?, ?, ?, ?, ?)", (self.name, self.cal_per_100, self.fat, self.carb, self.protein,),)
+            #connection.commit()
         else:
             # Create a pop-up window
             def popup():
@@ -67,12 +38,10 @@ class Etel:
                 # If the user clicks "Yes", update the existing record
                 cursor.execute(
                     "UPDATE Kaja_obj SET cal_per_100 = ?, fat = ?, carb = ?, protein = ? WHERE Name = ?",(self.cal_per_100, self.fat, self.carb, self.protein, self.name,),)
+                #connection.commit()
             else:
                 # If the user clicks "No", do nothing
                 pass
-        
-        connection.commit()
-        connection.close()
 
     def delete_from_db(self):
         # Connect to the database
@@ -93,11 +62,6 @@ class Etel:
         # Commit changes and close the connection
         connection.commit()
         connection.close()
-
-    def get_ID_by_name(self):
-        for meal in Etel.adat["Meals"]:
-            if meal["Name"] == self.name:
-                return meal["ID"]
         
     def __str__(self):
         return f"{self.name}"
@@ -118,6 +82,5 @@ class Etel:
 
 #print(Etel.All_foods[1].__dict__)
 #s = Etel("kupi",45,75,23,500)
-#s.write_ID()
 #s.write_into_note()
 #print(s)
