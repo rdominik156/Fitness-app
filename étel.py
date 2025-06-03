@@ -26,14 +26,14 @@ class Etel:
     def write_ID(self):
         connection = sqlite3.connect("database.db", timeout=10)
         cursor = connection.cursor()
-        print(self.name)
+        #print(self.name)
         cursor.execute("SELECT obj_id,Name FROM Kaja_obj WHERE Name = ?",(self.name,),)
         result = cursor.fetchone()
 
         if result is not None:
             # If the meal already exists
             self.Id = result[0]  # Get the existing ID
-            print(self.Id)
+            #print(self.Id)
         else:
             Etel.adat["Settings"]["F_ID_counter"] += 1
             Etel.counter += 1
@@ -106,15 +106,15 @@ class Etel:
         return f"ID: {self.Id}, Név: {self.name}, Szénhidrát: {self.carb}, Fehérje: {self.protein}, Zsír: {self.fat}, Kalória: {self.cal_per_100}"
 
 
-connection = sqlite3.connect("database.db", timeout=10)
-cursor = connection.cursor()
-
-cursor.execute("SELECT obj_id, Name, cal_per_100, fat, carb, protein FROM Kaja_obj")
-rows = cursor.fetchall()
-for row in rows:
-    obj = Etel(row[1], row[2], row[3], row[4], row[5], row[0])
-connection.commit()
-connection.close()
+#connection = sqlite3.connect("database.db", timeout=10)
+#cursor = connection.cursor()
+#
+#cursor.execute("SELECT obj_id, Name, cal_per_100, fat, carb, protein FROM Kaja_obj")
+#rows = cursor.fetchall()
+#for row in rows:
+#    obj = Etel(row[1], row[2], row[3], row[4], row[5], row[0])
+#connection.commit()
+#connection.close()
 
 #print(Etel.All_foods[1].__dict__)
 #s = Etel("kupi",45,75,23,500)

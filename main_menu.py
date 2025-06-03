@@ -29,16 +29,6 @@ days_name_dic = {"Monday" : 0,
 
 datum = datetime.today().strftime("%d/%m/%Y")
 
-# adat = json-ból az össze adat!
-#with open('kaja.json', "r", newline="") as hami:
-#                adat = json.load(hami)#
-
-# Meals-ből csak a nevek!
-#kaja= []
-#for nemtom in adat["Meals"]:
-#      kaja.append(nemtom["Name"])
-
-
 ctk.set_appearance_mode("dark")
 ctk.set_default_color_theme("dark-blue")
 
@@ -286,7 +276,7 @@ class App(ctk.CTk):
         def get_datum(event):
             selected_date = self.calend.selection_get()
             day_of_week = selected_date.strftime('%A')
-            print(f"Selected date: {selected_date.strftime('%d/%m/%Y')}, Day of the week: {day_of_week}")
+            #print(f"Selected date: {selected_date.strftime('%d/%m/%Y')}, Day of the week: {day_of_week}")
             all_kcal_sum = 0
             all_eatMuch_sum = 0
             all_eatFat_sum = 0
@@ -399,7 +389,7 @@ class App(ctk.CTk):
             uj_etel.write_ID()
 
             cursor.execute("SELECT obj_id FROM Kaja_obj WHERE obj_id = ?", (uj_etel.Id,))
-            print(cursor.fetchone())
+            #print(cursor.fetchone())
 
             if cursor.fetchone() is None:
                 uj_etel.insert_into_db()
@@ -462,7 +452,6 @@ def validate_credentials():
     userid = userid_entry.get()
     password = password_entry.get()
 
-    #for user in App.adat["users"]:
     cursor.execute("SELECT * FROM 'Felhasználó' WHERE Name = ? AND Password = ?", (userid, password))
     result = cursor.fetchone()
     if result:
@@ -470,13 +459,6 @@ def validate_credentials():
         user = Felhasznalo(userid, password)
         user.betöltés()
         App(user = user)
-
-        #if userid == user["Name"] and password == user["password"]:
-        #    login_window.destroy()
-        #    user = Felhasznalo(userid, password)
-        #    user.betöltés()
-        #    App(user = user)
-        #    break
     else:
         tk.messagebox.showerror("Login Failed", "Invalid User ID or Password")
 
@@ -490,12 +472,7 @@ def register_user():
     if password == confirm_password and username != "" and password != "":
         cursor.execute("INSERT INTO 'Felhasználó' ('Name', 'Password') VALUES (?, ?)", (username, password))
         connection.commit()
-        #with open("kaja.json", "r+", encoding='utf-8') as loader:
-        #    App.adat["users"].append({"ID": App.adat["Settings"]["U_ID_counter"],"Name": username, "password": password})
-        #    App.adat["Settings"]["U_ID_counter"] += 1
-        #    json.dump(App.adat, loader, indent=4, ensure_ascii=False)
-        #with open(username + '.txt', 'w', encoding='utf-8'):
-        #    pass
+
         tk.messagebox.showinfo("Registration Successful", "User registered successfully")
     else:
         tk.messagebox.showerror("Registration Failed", "Passwords do not match")

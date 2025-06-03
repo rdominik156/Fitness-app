@@ -6,12 +6,6 @@ connection = sqlite3.connect("database.db")
 cursor = connection.cursor()
 
 class Felhasznalo:
-    választható_ételek = []
-    with open("kaja.json", 'r', encoding='utf-8') as json_fajl:
-        data = json.load(json_fajl)
-        for meal in data.get("Meals", []):
-            választható_ételek.append(meal)
-    
     def __init__(self, felhasználó_név, jelszó):
         self.felhasználó_név = felhasználó_név
         self.jelszó = jelszó
@@ -26,11 +20,6 @@ class Felhasznalo:
         connection.commit()
 
     def betöltés(self):
-        """
-        Betölti a felhasználó ételeit a fájlból és hozzáadja azokat az ételek listához.
-        A fájl neve a felhasználó nevéből származik és .txt kiterjesztésű.
-        """
-
         cursor.execute("SELECT kaja_stored.name ,portion,cal_mul,fat_mul,carb_mul,prot_mul,datum FROM kaja_stored JOIN Felhasználó on kaja_stored.user_id = Felhasználó.user_id WHERE Felhasználó.Name = ?", (self.felhasználó_név,))
         rows = cursor.fetchall()
 

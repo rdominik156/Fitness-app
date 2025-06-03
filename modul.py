@@ -5,7 +5,7 @@ import sqlite3
 from étel import Etel
 
 
-class Kereső:
+class Kereső():
     def __init__(self, root):
         # Keresőmező változó
         search_var = ctk.StringVar()
@@ -19,10 +19,6 @@ class Kereső:
         # Listbox a találatok megjelenítésére
         self.listbox = tk.Listbox(master=root, height=12, borderwidth=0, highlightthickness=0, bg="#212121", fg="#DCE4EE", font=("Roboto", 10))
         self.listbox.pack(pady=10, padx=10)
-
-        # Kezdő lista feltöltése
-        #for item in list:
-        #    self.listbox.insert("end", item["Name"])
 
         # SQL adatbázisból adatok betöltése
         conn = sqlite3.connect('database.db')  # Csatlakozás az adatbázishoz
@@ -61,7 +57,6 @@ class Kereső:
     
     def remove(self, index:int):
         # Törli a kijelölt elemet
-        print(index[0])
         self.listbox.delete(index[0])
     
     def insert(self, item:str):
@@ -71,7 +66,20 @@ class Kereső:
     def get_selected(self):
         """Visszaadja a kijelölt elem obj_id-ját"""
         try:
-            selected = self.listbox.get(self.listbox.curselection())
+            index = self.listbox.curselection()
+            print(index)
+            if not index:
+                return None
+            selected_obj = self.listbox.get(index)
+            print(getattr(selected_obj, 'obj_id', None))
+            print(selected_obj)
+            if hasattr(selected_obj, 'obj_id'):
+                selected = selected_obj.name
+                obj_id = selected_obj.obj_id
+                print(obj_id + " " + selected)
+            else:
+                selected = selected_obj
+                obj_id = None
         except tk.TclError:
             return None  # Nincs kijelölés
 
