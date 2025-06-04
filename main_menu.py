@@ -389,31 +389,39 @@ class App(ctk.CTk):
             uj_etel = Etel(self.nameEntry.get(),  self.calorieEntry.get(), self.fatEntry.get(),self.carboEntry.get(), self.ProteinEntry.get())
             connection = sqlite3.connect("database.db")
             cursor = connection.cursor()
-            cursor.execute("SELECT obj_id FROM Kaja_obj WHERE obj_id = ?", (uj_etel.Id,))
+            cursor.execute("SELECT obj_id FROM Kaja_obj WHERE Name = ?", (uj_etel.name,))
             
             if cursor.fetchone() is None:
                 uj_etel.insert_into_db(cursor)
+                connection.commit()
+                cursor.execute("SELECT obj_id FROM Kaja_obj ORDER BY obj_id DESC LIMIT 1")
+                last_record = cursor.fetchone()
+                uj_etel.Id = last_record[0]
                 self.k1.insert(uj_etel)
                 self.k2.insert(uj_etel)
+                self.k1.objs.append(uj_etel)
+                self.k2.objs.append(uj_etel)
             else:
                 uj_etel.insert_into_db(cursor)
-            connection.commit()
+                connection.commit()
             connection.close()
 
         def listabol_torles_Meals():
             connection = sqlite3.connect("database.db")
             cursor = connection.cursor()
             if self.nameEntry.get() != "":
-                meal_to_delete = Etel( self.nameEntry.get(), self.carboEntry.get(), self.ProteinEntry.get(), self.fatEntry.get(), self.calorieEntry.get())
+                meal_to_delete = Etel(self.nameEntry.get(),  self.calorieEntry.get(), self.fatEntry.get(),self.carboEntry.get(), self.ProteinEntry.get())
                 cursor.execute("SELECT obj_id FROM Kaja_obj WHERE Name = ? AND cal_per_100 = ? AND fat = ? AND carb = ? AND protein = ?", 
                                (meal_to_delete.name, meal_to_delete.cal_per_100, meal_to_delete.fat, meal_to_delete.carb, meal_to_delete.protein))
                 meal_to_delete_index = cursor.fetchone()
-
+                meal_to_delete.Id = meal_to_delete_index[0]
                 listbox_index_to_delete = self.k1.listbox.curselection()
+
                 self.k1.remove(listbox_index_to_delete)
                 self.k2.remove(listbox_index_to_delete)
-                meal_to_delete.Id = meal_to_delete_index
-                meal_to_delete.delete_from_db()
+                self.k1.objs.pop(listbox_index_to_delete[0])
+                self.k2.objs.pop(listbox_index_to_delete[0])
+                meal_to_delete.delete_from_db(meal_to_delete_index[0])
 
                 self.nameEntry.delete(0,"end")
                 self.calorieEntry.delete(0,"end")

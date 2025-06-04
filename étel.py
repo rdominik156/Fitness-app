@@ -15,15 +15,12 @@ class Etel:
 
     def insert_into_db(self, cursor):
         # Check if the meal already exists in the database
-        #connection = sqlite3.connect("database.db", timeout=10)
-        #cursor = connection.cursor()
         cursor.execute("SELECT * FROM Kaja_obj WHERE Name = ?", (self.name,),)
         result = cursor.fetchone()
 
         if result is None:
             # If the meal does not exist, insert it
             cursor.execute("INSERT INTO Kaja_obj (Name, cal_per_100, fat, carb, protein) VALUES (?, ?, ?, ?, ?)", (self.name, self.cal_per_100, self.fat, self.carb, self.protein,),)
-            #connection.commit()
         else:
             # Create a pop-up window
             def popup():
@@ -38,23 +35,22 @@ class Etel:
                 # If the user clicks "Yes", update the existing record
                 cursor.execute(
                     "UPDATE Kaja_obj SET cal_per_100 = ?, fat = ?, carb = ?, protein = ? WHERE Name = ?",(self.cal_per_100, self.fat, self.carb, self.protein, self.name,),)
-                #connection.commit()
             else:
                 # If the user clicks "No", do nothing
                 pass
 
-    def delete_from_db(self):
+    def delete_from_db(self, index):
         # Connect to the database
         connection = sqlite3.connect("database.db", timeout=10)
         cursor = connection.cursor()
 
         # Check if the meal exists in the database
-        cursor.execute("SELECT * FROM Kaja_obj WHERE Name = ?", (self.name,))
+        cursor.execute("SELECT Name FROM Kaja_obj WHERE obj_id = ?", (index,))
         result = cursor.fetchone()
 
         if result is not None:
             # If the meal exists, delete it
-            cursor.execute("DELETE FROM Kaja_obj WHERE Name = ?", (self.name,))
+            cursor.execute("DELETE FROM Kaja_obj WHERE obj_id = ?", (index,))
             print(f"Record '{self.name}' deleted successfully.")
         else:
             print(f"Record '{self.name}' does not exist in the database.")

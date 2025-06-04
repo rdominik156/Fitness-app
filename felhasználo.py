@@ -24,7 +24,6 @@ class Felhasznalo:
         rows = cursor.fetchall()
 
         for row in rows:
-            print(row)
             self.ételek.append(list(row))
 
 
