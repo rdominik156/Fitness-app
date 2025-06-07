@@ -42,6 +42,7 @@ class App(ctk.CTk):
         self.geometry("1000x400")        
         self.user = user
         self.user.betöltés()
+        print(self.user)
 
         # declare Tabview
         self.tab_view = ctk.CTkTabview(self)
@@ -145,7 +146,7 @@ class App(ctk.CTk):
             self.kereső_calories = ctk.CTkFrame(master=self.tab2, border_width=2, height=500, width=250)
             self.kereső_calories.grid(row=0, column=1, padx=20, pady=10)
             self.k2 = Kereső(self.kereső_calories)
-            self.k2.listbox.bind("<Double-Button-1>", lambda event: self.whatLabel2.configure(text=self.k2.get_selected()))
+            self.k2.listbox.bind("<<ListboxSelect>>", lambda event: self.whatLabel2.configure(text=self.k2.get_selected()))
 
 
             #Labels for tab " Calculate "
@@ -327,41 +328,29 @@ class App(ctk.CTk):
             self.allCaloriesCalculated.configure(text=f"{self.inClassSum}   Kcal")
         refresh()
 
-            #a név és caloria json-hoz adása
+            # db kaja_stored rögzítése
         def hozza_adás_calories():
-            Neve = self.k2.get_selected()
+            connection = sqlite3.connect("database.db")
+            cursor = connection.cursor()
+
+            Id = self.k2.get_selected()
             Portion_per_each = int(self.portionEntry.get())
-            x = next((index for (index, d) in enumerate(App.adat["Meals"]) if d["Name"] == Neve), None)
 
-            # Calories_multiplication kiszámolása
-            cal_mul = (int(App.adat["Meals"][x]["cal_per_100"]) * Portion_per_each) / 100
-            fat_mul = (float(App.adat["Meals"][x]["fat"]) * Portion_per_each) / 100
-            carb_mul = (float(App.adat["Meals"][x]["carb"]) * Portion_per_each) / 100
-            prot_mul = (float(App.adat["Meals"][x]["protein"]) * Portion_per_each) / 100
+            cursor.execute("SELECT * FROM Kaja_obj WHERE obj_id = ?", (Id,))
+            obj_args = cursor.fetchone()
+            cursor = connection.execute("SELECT user_id FROM Felhasználó WHERE Name = ?", (self.user.felhasználó_név,))
+            user = cursor.fetchone()
 
-            lista = [Neve, Portion_per_each, cal_mul, fat_mul, carb_mul, prot_mul]
-            self.calculateTreeView.insert("",index="end", values=lista)
-            self.user.hozzáadás_ételekhez(lista + [datum])
+            object = Etel(*obj_args[1:6], obj_args[0])
 
-            # Calories dictionary
-            caloria_adatok = {
-              "Neve": Neve,
-              "Portion/each": Portion_per_each,
-              "Calories_multiplication": cal_mul,
-              "Fat_multiplication": fat_mul,
-              "Carbohydrate_multiplication": carb_mul,
-              "Protein_multiplication": prot_mul,
-              "datum": datum
-             }
-            
-            # add to json
-            with open("kaja.json", "r+") as loader:
-                App.adat["Calories"].append(caloria_adatok)
-                json.dump(App.adat, loader, indent=4)
-            # modify all kcal
-            self.inClassSum += cal_mul
-            self.allCaloriesCalculated.configure(text=f"{self.inClassSum}   Kcal")
+            for key, val in object.__dict__.items():
+                if not isinstance(val, str) and key != "Id":
+                    object.__setattr__(key, (val * Portion_per_each) / 100)
 
+            cursor.execute("INSERT INTO kaja_stored (user_id, obj_id, name, portion, cal_mul, fat_mul, carb_mul, prot_mul, datum) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)",
+                           (user[0], Id, object.name, Portion_per_each, object.cal_per_100, object.fat, object.carb, object.protein, datum))
+            connection.commit()
+            connection.close()
 
         def listabol_torles_Calculat():
             n = 0
