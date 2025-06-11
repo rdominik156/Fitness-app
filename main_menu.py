@@ -39,10 +39,11 @@ class App(ctk.CTk):
     def __init__(self, user,**kwargs):
         super().__init__( **kwargs)
         self.title("TheFitnessApp")
-        self.geometry("1000x400")        
+        self.geometry("1000x500")        
         self.user = user
-        self.user.betöltés()
-        print(self.user)
+        
+        self.k1_index = None
+        self.k2_index = None
 
         # declare Tabview
         self.tab_view = ctk.CTkTabview(self)
@@ -141,12 +142,13 @@ class App(ctk.CTk):
             self.kereső_meals = ctk.CTkFrame(master=self.tab3, border_width=2, height=500, width=250)
             self.kereső_meals.grid(row=0, column=1, padx=20, pady=10)
             self.k1 = Kereső(self.kereső_meals)
-            self.k1.listbox.bind("<<ListboxSelect>>", Entry_k_visszaírása)
+            self.k1.listbox.bind("<<ListboxSelect>>", lambda event: (Entry_k_visszaírása(event), on_k1_select(event)))
+            #self.k1.listbox.bind("<<ListboxSelect>>", on_k1_select)
 
             self.kereső_calories = ctk.CTkFrame(master=self.tab2, border_width=2, height=500, width=250)
             self.kereső_calories.grid(row=0, column=1, padx=20, pady=10)
             self.k2 = Kereső(self.kereső_calories)
-            self.k2.listbox.bind("<<ListboxSelect>>", lambda event: self.whatLabel2.configure(text=self.k2.get_selected()))
+            self.k2.listbox.bind("<<ListboxSelect>>", lambda event: (self.whatLabel2.configure(text=self.k2.get_selected_name()),on_k2_select(event)))
 
 
             #Labels for tab " Calculate "
@@ -245,32 +247,44 @@ class App(ctk.CTk):
                     self.e.insert("end", j)
                 y = 0
 
+        def on_k1_select(event):
+            selection = self.k1.listbox.curselection()
+            print(selection)
+            if selection:
+                self.k1_index = selection[0]
+
+        def on_k2_select(event):
+            selection = self.k2.listbox.curselection()
+            if selection:
+                self.k2_index = selection[0]
+
         def Entry_k_visszaírása(event):
             # Get the Etel object from k1 using the index
-            etel_obj_id = self.k1.get_selected()  # Assuming Kereső keeps Etel objects in self.items
+            etel_obj_id = self.k1.get_selected()
+            if etel_obj_id:
+                self.k1_index = etel_obj_id
+                # Fetch meal details from the database
+                connection = sqlite3.connect("database.db")
+                cursor = connection.cursor()
+                cursor.execute(
+                    "SELECT Name, cal_per_100, fat, carb, protein FROM Kaja_obj WHERE obj_id = ?", (self.k1_index,))
+                result = cursor.fetchone()
 
-            # Fetch meal details from the database
-            connection = sqlite3.connect("database.db")
-            cursor = connection.cursor()
-            cursor.execute(
-                "SELECT Name, cal_per_100, fat, carb, protein FROM Kaja_obj WHERE obj_id = ?", (etel_obj_id,))
-            result = cursor.fetchone()
+                if result:
+                    name, cal_per_100, fat, carb, protein = result
 
-            if result:
-                name, cal_per_100, fat, carb, protein = result
+                    self.nameEntry.delete(0, "end")
+                    self.calorieEntry.delete(0, "end")
+                    self.fatEntry.delete(0, "end")
+                    self.carboEntry.delete(0, "end")
+                    self.ProteinEntry.delete(0, "end")
 
-                self.nameEntry.delete(0, "end")
-                self.calorieEntry.delete(0, "end")
-                self.fatEntry.delete(0, "end")
-                self.carboEntry.delete(0, "end")
-                self.ProteinEntry.delete(0, "end")
-
-                self.nameEntry.insert(0, name)
-                self.calorieEntry.insert(0, cal_per_100)
-                self.fatEntry.insert(0, fat)
-                self.carboEntry.insert(0, carb)
-                self.ProteinEntry.insert(0, protein)
-            connection.close()
+                    self.nameEntry.insert(0, name)
+                    self.calorieEntry.insert(0, cal_per_100)
+                    self.fatEntry.insert(0, fat)
+                    self.carboEntry.insert(0, carb)
+                    self.ProteinEntry.insert(0, protein)
+                connection.close()
 
 
         All_GUI(self)
@@ -316,16 +330,18 @@ class App(ctk.CTk):
         def refresh():
         # variable of display all kcal
             self.inClassSum = 0
+            connection = sqlite3.connect("database.db")
+            cursor = connection.cursor()
+            cursor.execute("SELECT * FROM kaja_stored WHERE datum = ?", (datum,))
+            rows = cursor.fetchall()        
 
-            for i in App.adat["Calories"]:
-                if i["datum"] == datum:
-                    tápöl = (i["Neve"], i["Portion/each"], i["Calories_multiplication"], i["Fat_multiplication"], i["Carbohydrate_multiplication"], i["Protein_multiplication"])
-                    #for táp in tápöl:
-                    self.calendarTreeView.insert("",index="end", values=tápöl)
-                    self.calculateTreeView.insert("",index="end", values=tápöl)
-                    # modify all kcal
-                    self.inClassSum += i["Calories_multiplication"]
+            for row in rows:
+                self.calendarTreeView.insert("",index="end", values=row[2:8])
+                self.calculateTreeView.insert("",index="end", values=row[2:8])
+                self.inClassSum += row[4]  # Assuming Calories_multiplication is at index 5
+            connection.close()
             self.allCaloriesCalculated.configure(text=f"{self.inClassSum}   Kcal")
+
         refresh()
 
             # db kaja_stored rögzítése
@@ -333,24 +349,28 @@ class App(ctk.CTk):
             connection = sqlite3.connect("database.db")
             cursor = connection.cursor()
 
-            Id = self.k2.get_selected()
-            Portion_per_each = int(self.portionEntry.get())
+            if self.k2_index:
+                Portion_per_each = int(self.portionEntry.get())
+                self.k2_index = self.k2.objs[self.k2_index].Id
 
-            cursor.execute("SELECT * FROM Kaja_obj WHERE obj_id = ?", (Id,))
-            obj_args = cursor.fetchone()
-            cursor = connection.execute("SELECT user_id FROM Felhasználó WHERE Name = ?", (self.user.felhasználó_név,))
-            user = cursor.fetchone()
+                cursor.execute("SELECT * FROM Kaja_obj WHERE obj_id = ?", (self.k2_index,))
+                obj_args = cursor.fetchone()
+                cursor = connection.execute("SELECT user_id FROM Felhasználó WHERE Name = ?", (self.user.felhasználó_név,))
+                user = cursor.fetchone()
 
-            object = Etel(*obj_args[1:6], obj_args[0])
+                object = Etel(*obj_args[1:6], obj_args[0])
 
-            for key, val in object.__dict__.items():
-                if not isinstance(val, str) and key != "Id":
-                    object.__setattr__(key, (val * Portion_per_each) / 100)
+                for key, val in object.__dict__.items():
+                    if not isinstance(val, str) and key != "Id":
+                        object.__setattr__(key, (val * Portion_per_each) / 100)
 
-            cursor.execute("INSERT INTO kaja_stored (user_id, obj_id, name, portion, cal_mul, fat_mul, carb_mul, prot_mul, datum) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)",
-                           (user[0], Id, object.name, Portion_per_each, object.cal_per_100, object.fat, object.carb, object.protein, datum))
-            connection.commit()
-            connection.close()
+                cursor.execute("INSERT INTO kaja_stored (user_id, obj_id, name, portion, cal_mul, fat_mul, carb_mul, prot_mul, datum) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)",
+                               (user[0], self.k2_index, object.name, Portion_per_each, object.cal_per_100, object.fat, object.carb, object.protein, datum))
+                connection.commit()
+                connection.close()
+                self.calculateTreeView.insert("", index="end", values=(object.name, Portion_per_each, object.cal_per_100, object.fat, object.carb, object.protein))
+                self.inClassSum += object.cal_per_100
+                self.allCaloriesCalculated.configure(text=f"{self.inClassSum}   Kcal")
 
         def listabol_torles_Calculat():
             n = 0
@@ -404,19 +424,19 @@ class App(ctk.CTk):
                                (meal_to_delete.name, meal_to_delete.cal_per_100, meal_to_delete.fat, meal_to_delete.carb, meal_to_delete.protein))
                 meal_to_delete_index = cursor.fetchone()
                 meal_to_delete.Id = meal_to_delete_index[0]
-                listbox_index_to_delete = self.k1.listbox.curselection()
 
-                self.k1.remove(listbox_index_to_delete)
-                self.k2.remove(listbox_index_to_delete)
-                self.k1.objs.pop(listbox_index_to_delete[0])
-                self.k2.objs.pop(listbox_index_to_delete[0])
-                meal_to_delete.delete_from_db(meal_to_delete_index[0])
-
-                self.nameEntry.delete(0,"end")
-                self.calorieEntry.delete(0,"end")
-                self.fatEntry.delete(0,"end")
-                self.carboEntry.delete(0,"end")
-                self.ProteinEntry.delete(0,"end")
+                if self.k1_index:
+                    self.k1.remove(self.k1_index)
+                    self.k2.remove(self.k1_index)
+                    self.k1.objs.pop(self.k1_index)
+                    self.k2.objs.pop(self.k1_index)
+                    meal_to_delete.delete_from_db(meal_to_delete_index[0])
+    
+                    self.nameEntry.delete(0,"end")
+                    self.calorieEntry.delete(0,"end")
+                    self.fatEntry.delete(0,"end")
+                    self.carboEntry.delete(0,"end")
+                    self.ProteinEntry.delete(0,"end")
             connection.commit()
             connection.close()
 

@@ -50,7 +50,7 @@ class Kereső():
     
     def remove(self, index:int):
         # Törli a kijelölt elemet
-        self.listbox.delete(index[0])
+        self.listbox.delete(index)
     
     def insert(self, item:str):
         # Beszúr egy elemet a lista végére
@@ -60,8 +60,23 @@ class Kereső():
         """Visszaadja a kijelölt elem obj_id-ját"""
         try:
             index = self.listbox.curselection()
-            sel_obj = self.objs[index[0]]
-            sel_obj_id = sel_obj.__getattribute__('Id')
+            print(index)
+            if index:
+                sel_obj = self.objs[index[0]]
+                sel_obj_id = sel_obj.__getattribute__('Id')
+                return sel_obj_id
         except tk.TclError:
             return None  # Nincs kijelölés
-        return sel_obj_id
+        #return sel_obj_id
+    
+    def get_selected_name(self):
+        """Visszaadja a kijelölt elem nevét"""
+        try:
+            index:int = self.listbox.curselection()
+            if index:
+                sel_obj = self.objs[index[0]]
+                sel_obj_name = sel_obj.__getattribute__('name')
+                return sel_obj_name
+        except tk.TclError:
+            return None
+        #return sel_obj_name
