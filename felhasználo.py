@@ -25,6 +25,10 @@ class Felhasznalo:
 
         for row in rows:
             self.ételek.append(list(row))
+    
+    def user_id(self):
+        cursor.execute("SELECT user_id FROM Felhasználó WHERE Name = ?", (self.felhasználó_név,))
+        return cursor.fetchone()[0]
 
 
     def __repr__(self):

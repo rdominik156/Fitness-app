@@ -229,24 +229,6 @@ class App(ctk.CTk):
             self.portionEntry = ctk.CTkEntry(master=self.entryFrame)
             self.portionEntry.grid(row=1, column=1, padx=20, pady=10)
 
-        def Táblázat(self, adat):
-            pass
-            x = 0
-            y = 0
-
-            # code for creating table
-            for i in adat["Calories"]:
-                x += 1
-                for j in i.values():
-                    y += 1
-
-                    self.e = entry = ctk.CTkEntry(self.tab2, placeholder_text='CTkEntry', width=140, height=28)
-                    entry.place(x=10, y=10)
-
-                    self.e.grid(row=x, column=y)
-                    self.e.insert("end", j)
-                y = 0
-
         def on_k1_select(event):
             selection = self.k1.listbox.curselection()
             print(selection)
@@ -290,40 +272,55 @@ class App(ctk.CTk):
         All_GUI(self)
 
         def get_datum(event):
-            selected_date = self.calend.selection_get()
-            day_of_week = selected_date.strftime('%A')
-            #print(f"Selected date: {selected_date.strftime('%d/%m/%Y')}, Day of the week: {day_of_week}")
             all_kcal_sum = 0
             all_eatMuch_sum = 0
             all_eatFat_sum = 0
             all_eatCarb_sum = 0
             all_eatProt_sum = 0
 
-            #elemek kitörlése
+            # Clear previous items
             for item in self.calendarTreeView.get_children():
                 self.calendarTreeView.delete(item)
 
             curent_data = self.calend.get_date()
-            for i in App.adat["Calories"]:
-                if i["datum"] == curent_data:
+            connection = sqlite3.connect("database.db")
+            cursor = connection.cursor()
+            cursor.execute("SELECT name, portion, cal_mul, fat_mul, carb_mul, prot_mul FROM kaja_stored WHERE user_id = ? AND datum = ?",
+                (self.user.user_id(), curent_data))
+            rows = cursor.fetchall()
 
-                    tápöl = (i["Neve"], i["Portion/each"], i["Calories_multiplication"], i["Fat_multiplication"], i["Carbohydrate_multiplication"], i["Protein_multiplication"])
-                    self.calendarTreeView.insert("",index="end", values=tápöl)
+            # fill the calendarTreeView with data
+            for row in rows:
+                self.calendarTreeView.insert("", index="end", values=row)
+                all_eatMuch_sum += row[1] if row[1] else 0
+                all_kcal_sum += row[2] if row[2] else 0
+                all_eatFat_sum += row[3] if row[3] else 0
+                all_eatCarb_sum += row[4] if row[4] else 0
+                all_eatProt_sum += row[5] if row[5] else 0
+            connection.close()
+            self.datumLabel.configure(text=f"Összes:\t\t{all_eatMuch_sum}\t\t{all_kcal_sum}\t{all_eatFat_sum}\t{all_eatCarb_sum}\t\t{all_eatProt_sum}")
 
-                    all_kcal_sum += i["Calories_multiplication"]
-                    all_eatMuch_sum += i["Portion/each"]
-                    all_eatFat_sum += i["Fat_multiplication"]
-                    all_eatCarb_sum += i["Carbohydrate_multiplication"]
-                    all_eatProt_sum += i["Protein_multiplication"]
-            self.datumLabel.configure(text=f"Összes:\t\t{all_eatMuch_sum}\t\t{all_kcal_sum}\t{all_eatFat_sum}\t{all_eatCarb_sum}\t\t{all_eatProt_sum}         ")        
         self.calend.bind("<<CalendarSelected>>", get_datum)
 
         def color_calendar_dates(calendar):
 
-            for datumok in App.adat["Calories"]:
-                day = datumok["datum"]
-                date_obj = datetime.strptime(day, '%d/%m/%Y').date()
-                calendar.calevent_create(date_obj, 'highlight', 'highlight')
+            #for datumok in App.adat["Calories"]:
+            #    day = datumok["datum"]
+            #    date_obj = datetime.strptime(day, '%d/%m/%Y').date()
+            #    calendar.calevent_create(date_obj, 'highlight', 'highlight')
+
+            # Highlight calendar dates where the current user has entries in kaja_stored
+            connection = sqlite3.connect("database.db")
+            cursor = connection.cursor()
+            cursor.execute("SELECT datum FROM kaja_stored WHERE user_id = ?", (self.user.user_id(),))
+            dates = cursor.fetchall()
+            for (day,) in dates:
+                try:
+                    date_obj = datetime.strptime(day, '%d/%m/%Y').date()
+                    calendar.calevent_create(date_obj, 'highlight', 'highlight')
+                except Exception:
+                    pass
+            connection.close()
     
         color_calendar_dates(self.calend)
 
@@ -369,29 +366,26 @@ class App(ctk.CTk):
                 connection.commit()
                 connection.close()
                 self.calculateTreeView.insert("", index="end", values=(object.name, Portion_per_each, object.cal_per_100, object.fat, object.carb, object.protein))
+                self.calendarTreeView.insert("", index="end", values=(object.name, Portion_per_each, object.cal_per_100, object.fat, object.carb, object.protein))
                 self.inClassSum += object.cal_per_100
                 self.allCaloriesCalculated.configure(text=f"{self.inClassSum}   Kcal")
 
         def listabol_torles_Calculat():
-            n = 0
+            connentin = sqlite3.connect("database.db")
+            cursor = connentin.cursor()
             s_item = self.calculateTreeView.selection()
-            selected_item = int(s_item[0][1:4],16)
             if s_item:
                 item = self.calculateTreeView.item(s_item)
                 self.inClassSum -= float(item["values"][2])
                 self.allCaloriesCalculated.configure(text=f"{self.inClassSum}   Kcal")
                 self.calculateTreeView.delete(s_item)
-                for i in App.adat["Calories"]:
-                    if datum == i["datum"]:
-                        break
-                    else:
-                        n+=1
-            
-            if selected_item != 0:
-                del App.adat["Calories"][n+selected_item-1]
-                with open("kaja.json", "w") as f:
-                    json.dump(App.adat, f, indent=4)    
-
+                #self.calendarTreeView.delete(s_item)  # bugos, meg kell csinálni
+                cursor.execute(
+                    "DELETE FROM kaja_stored WHERE ROWID = (SELECT ROWID FROM kaja_stored WHERE user_id = ? AND name = ? AND portion = ? AND datum = ? LIMIT 1)",
+                    (self.user.user_id(), item["values"][0], item["values"][1], datum)
+                )
+                connentin.commit()
+            connentin.close()
 
         def hozza_adás_Meals():
             # Étel objektum létrehozása --> db fileba írás
