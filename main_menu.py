@@ -164,8 +164,8 @@ class App(ctk.CTk):
             self.allCaloriesCalculated.grid(column=1,row=4,padx=20, pady=10 )
 
             #Labels for tab " Calendar "
-            self.datumLabel = ctk.CTkLabel(master=self.tab1, text="ASSSD")
-            self.datumLabel.grid(row=2, column=0, padx=20, pady=10)
+            self.datumLabel = ctk.CTkLabel(master=self.tab1, text="")
+            self.datumLabel.grid(row=2, column=0, padx=20, pady=10, sticky="w")
 
             #Listbox for tab " Calendar "
             ttk.style = ttk.Style()
@@ -298,17 +298,11 @@ class App(ctk.CTk):
                 all_eatCarb_sum += row[4] if row[4] else 0
                 all_eatProt_sum += row[5] if row[5] else 0
             connection.close()
-            self.datumLabel.configure(text=f"Összes:\t\t{all_eatMuch_sum}\t\t{all_kcal_sum}\t{all_eatFat_sum}\t{all_eatCarb_sum}\t\t{all_eatProt_sum}")
+            self.datumLabel.configure(text=f"\tÖsszes:{all_eatMuch_sum:25.1f}{all_kcal_sum:23.1f}{all_eatFat_sum:20.1f}{all_eatCarb_sum:20.1f}{all_eatProt_sum:20.1f}")
 
         self.calend.bind("<<CalendarSelected>>", get_datum)
 
         def color_calendar_dates(calendar):
-
-            #for datumok in App.adat["Calories"]:
-            #    day = datumok["datum"]
-            #    date_obj = datetime.strptime(day, '%d/%m/%Y').date()
-            #    calendar.calevent_create(date_obj, 'highlight', 'highlight')
-
             # Highlight calendar dates where the current user has entries in kaja_stored
             connection = sqlite3.connect("database.db")
             cursor = connection.cursor()
@@ -326,6 +320,7 @@ class App(ctk.CTk):
 
         def refresh():
         # variable of display all kcal
+            össz = [0, 0, 0, 0, 0]
             self.inClassSum = 0
             connection = sqlite3.connect("database.db")
             cursor = connection.cursor()
@@ -333,11 +328,14 @@ class App(ctk.CTk):
             rows = cursor.fetchall()        
 
             for row in rows:
+                for i in range(5):
+                    össz[i] += row[i+3]
                 self.calendarTreeView.insert("",index="end", values=row[2:8])
                 self.calculateTreeView.insert("",index="end", values=row[2:8])
                 self.inClassSum += row[4]  # Assuming Calories_multiplication is at index 5
             connection.close()
             self.allCaloriesCalculated.configure(text=f"{self.inClassSum}   Kcal")
+            self.datumLabel.configure(text=f"\tÖsszes:{össz[0]:25.1f}{össz[1]:23.1f}{össz[2]:20.1f}{össz[3]:20.1f}{össz[4]:20.1f}")
 
         refresh()
 
@@ -365,21 +363,29 @@ class App(ctk.CTk):
                                (user[0], self.k2_index, object.name, Portion_per_each, object.cal_per_100, object.fat, object.carb, object.protein, datum))
                 connection.commit()
                 connection.close()
+
                 self.calculateTreeView.insert("", index="end", values=(object.name, Portion_per_each, object.cal_per_100, object.fat, object.carb, object.protein))
-                self.calendarTreeView.insert("", index="end", values=(object.name, Portion_per_each, object.cal_per_100, object.fat, object.carb, object.protein))
+                if self.calend.get_date() == datetime.today().strftime("%d/%m/%Y"):
+                    self.calendarTreeView.insert("", index="end", values=(object.name, Portion_per_each, object.cal_per_100, object.fat, object.carb, object.protein))
                 self.inClassSum += object.cal_per_100
                 self.allCaloriesCalculated.configure(text=f"{self.inClassSum}   Kcal")
 
         def listabol_torles_Calculat():
             connentin = sqlite3.connect("database.db")
             cursor = connentin.cursor()
-            s_item = self.calculateTreeView.selection()
-            if s_item:
-                item = self.calculateTreeView.item(s_item)
+            sel_item = self.calculateTreeView.selection()
+            if sel_item:
+                item_ch = (self.calculateTreeView.get_children(), self.calendarTreeView.get_children())
+                idx = self.calculateTreeView.index(sel_item[0])
+                item = self.calculateTreeView.item(sel_item)
                 self.inClassSum -= float(item["values"][2])
                 self.allCaloriesCalculated.configure(text=f"{self.inClassSum}   Kcal")
-                self.calculateTreeView.delete(s_item)
-                #self.calendarTreeView.delete(s_item)  # bugos, meg kell csinálni
+
+                self.calculateTreeView.delete(item_ch[0][idx])
+                # if the selected date is today, delete from calendarTreeView as well
+                if self.calend.get_date() == datetime.today().strftime("%d/%m/%Y"):
+                    self.calendarTreeView.delete(item_ch[1][idx])
+ 
                 cursor.execute(
                     "DELETE FROM kaja_stored WHERE ROWID = (SELECT ROWID FROM kaja_stored WHERE user_id = ? AND name = ? AND portion = ? AND datum = ? LIMIT 1)",
                     (self.user.user_id(), item["values"][0], item["values"][1], datum)
