@@ -319,7 +319,6 @@ class App(ctk.CTk):
         color_calendar_dates(self.calend)
 
         def refresh():
-        # variable of display all kcal
             össz = [0, 0, 0, 0, 0]
             self.inClassSum = 0
             connection = sqlite3.connect("database.db")
@@ -332,7 +331,7 @@ class App(ctk.CTk):
                     össz[i] += row[i+3]
                 self.calendarTreeView.insert("",index="end", values=row[2:8])
                 self.calculateTreeView.insert("",index="end", values=row[2:8])
-                self.inClassSum += row[4]  # Assuming Calories_multiplication is at index 5
+                self.inClassSum += row[4]
             connection.close()
             self.allCaloriesCalculated.configure(text=f"{self.inClassSum}   Kcal")
             self.datumLabel.configure(text=f"\tÖsszes:{össz[0]:25.1f}{össz[1]:23.1f}{össz[2]:20.1f}{össz[3]:20.1f}{össz[4]:20.1f}")
